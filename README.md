@@ -1,7 +1,6 @@
 rockybalboa
 
-BIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIITTTTTTTEUHHUHUUHUUHUHUHU
 
 ===========
 
-A ROC developed in OCaml.
+An OCR developed in OCaml.
