@@ -6,4 +6,3 @@ let hough matrice =
     let (w,h) = (Array.length matrice, Array.length matrice.(0)) in
     let diagonal = hypot w h in
     let vote_matrice =
-
