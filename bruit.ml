@@ -21,3 +21,18 @@ let whiterthanwhite img =
 			for j = 0 to h-1 do
 				let (* jesaispasencore *)
 *)
+
+
+let coupe_mediane img =
+	let (h, w) = utile.get_dim img in
+	let matrix = Array.make_matrix h w Sdlvideo.get_pixel 
+		for i = 0 to h do
+			for j = 0 to w do
+				if (j = 0) then
+				begin
+					if (i = 0) then
+
+				end
+			done
+		done
+	
