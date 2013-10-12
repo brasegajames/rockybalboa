@@ -10,6 +10,10 @@ let rec wait_key () =
     Sdlevent.KEYDOWN _ -> ()
       | _ -> wait_key ()
 
+let get_dims img =
+  ((Sdlvideo.surface_info img).Sdlvideo.w, (Sdlvideo.surface_info img).Sdlvideo.h)
+
+
 let main () =
   begin
     (* Nous voulons 1 argument *)

@@ -40,15 +40,37 @@ l,l,l  ;;
 
 let image2grey src dst = 
  let (w,h) = utile.get_dims src in
-  for i = 0 to w-1 do
-    for j = 0 to h-1 do
+  for i = 0 to w do
+    for j = 0 to h do
     Sdlvideo.put_pixel_color dst i j (color2grey (Sdlvideo.get_pixel_color src i j))
 
     done
     
   done
 
+(* Renvoi la moyenne du level des pixels de l'image (entre 0 et 1) *)
+let averageimage src =
+        let acc = ref 0. in
+        let (w,h) = utile.get_dims src in
+                for i = 0 to w do      (*boucle de parcour*)
+                        for j = 0 to h do
+                        acc := !acc +. level(Sdlvideo.get_pixel_color src i j)
+                        done (*garde le lveles des pixel de l image*)
+                done;
 
+        (!acc)/.(float_of_int(w)*.float_of_int(h)) (moyenne ) (* acc / par le nombre de pixel de l'image*)
+
+(* Passe l'image en noir et blanc, si le level d'un pixel est sous le level moyen ou si il est ou dessus *)
+let black_and_white img =
+    let moy = averageimage img in
+    let (w,h) = utile.get_dims img in
+        for i = 0 to w do
+                for j = 0 to h do
+                        if level(Sdlvideo.get_pixel_color img i j) < moy
+                        then Sdlvideo.put_pixel_color img i j (255,255,255) (*applique blanc au pixel*)
+                        else Sdlvideo.put_pixel_color img i j (0,0,0)        (*applique la couleur noir*)
+                done
+        done
 (*
 (* main *)
 let main () =
