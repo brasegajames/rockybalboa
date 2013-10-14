@@ -37,3 +37,37 @@ let rec merge_sort = function
      | [e] -> [e]
      | liste -> let (e1,e2) = split liste in
                             merge (merge_sort e1) (merge_sort e2)
+
+
+(* show img dst : affiche la surface img sur la surface
+  de destination dst (normalement l'écran) *)
+let show img dst =
+  let d = Sdlvideo.display_format img in
+    Sdlvideo.blit_surface d dst ();
+    Sdlvideo.flip dst
+
+(* Affiche l'image img sur un cadre de la bonne taille *)
+let display img =
+  let (w, h) = get_dims img in
+    show img (Sdlvideo.set_video_mode w h [`DOUBLEBUF])
+
+(* Dessine un rectangle dans une matrice avec
+les coordonnées n de la couleur color *)
+let drawRect m n color =
+  let (a, b, c, d) = n in
+    let j = ref b in
+      for i = a to c do
+        m.(i).(!j) <- color;
+      done;
+      j := d;
+      for i = a to c do
+        m.(i).(!j) <- color;
+      done;
+      j := a;
+      for i = b to d do
+        m.(!j).(i) <- color;
+      done;
+      j := c;
+      for i = b to d do
+        m.(!j).(i) <- color;
+      done
