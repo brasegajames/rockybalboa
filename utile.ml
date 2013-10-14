@@ -8,7 +8,7 @@ let make_matrix n1 n2 init =
 val make_matrix : int -> int -> 'a -> 'a array array
 *)
 
-let get_dim img =
+let get_dims img =
 	((Sdlvideo.surface_info img).Sdlvideo.w, (Sdlvideo.surface_info img).Sdlvideo.h)
 
 let level (r,g,b) =
