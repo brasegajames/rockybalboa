@@ -24,11 +24,11 @@ let hough matrice =
                        if droite>=0 then (* on remplis le tableau de vote *)
                          begin
                           let teta_i = int_of_float(!t*.100. +. pi02*.100.)in
-                           matrice_de_vote.(droite).(teta_i) <-
-                                  matrice_de_vote.(droite).(teta_i)+1;
-                           if !vote_max < matrice_de_vote.(droite).(teta_i) then
+                           vote_matrice.(droite).(teta_i) <-
+                                  vote_matrice.(droite).(teta_i)+1;
+                           if !vote_max < vote_matrice.(droite).(teta_i) then
                                   begin
-                                  vote_max := matrice_de_vote.(droite).(teta_i);
+                                  vote_max := vote_matrice.(droite).(teta_i);
                                   teta_max := !t;
                                   end;
                          end;
