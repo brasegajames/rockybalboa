@@ -1,0 +1,26 @@
+POUR UTILISER LE PUTAIN DE Makefile QUI MARCHE
+
+Pour ajouter des fichiers au proj
+=> ouvrir le Makefile
+=> rajouter sur la ligne " FILES = ... " les fichiers X.mli et X.ml (dans cet ordre, et essayer de faire en sorte que les fichiers mis en premiers n'aient pas besoin de ceux après)
+=> sauvegarder...
+
+Pour compiler le proj
+=> DANS UN TERMINAL (dans le bon dossier...), faire "make" (sans les "")
+=> plein de fichiers à la con sont créés, mais surtout le OCR.out
+=> Faire "./OCR.out image.xyz" avec image.xyz l'image à modif.
+
+UNE FOIS QU'ON A FAIT JOUJOU
+=> make clean
+=> ça enlève toussa, pour avoir à nouveau un truc propre.
+
+
+
+NOTA BENE : N'oubliez pas de modifier le main.ml avec les fonctions que vous voulez tester, sinon ça changera rien bande de bites. 
+
+NOTA BENE 2 : Remplissez vos .mli parce que ça sera moins la merde pour pouvoir utiliser la merde de chacun, comme ça on sait ce que prend et retourne la fonction.
+
+
+====
+
+Poney.

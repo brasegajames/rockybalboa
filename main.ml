@@ -10,10 +10,6 @@ let rec wait_key () =
     Sdlevent.KEYDOWN _ -> ()
       | _ -> wait_key ()
 
-let get_dims img =
-  ((Sdlvideo.surface_info img).Sdlvideo.w, (Sdlvideo.surface_info img).Sdlvideo.h)
-
-
 let main () =
   begin
     (* Nous voulons 1 argument *)
@@ -24,11 +20,13 @@ let main () =
     (* Chargement d'une image *)
     let img = Sdlloader.load_image Sys.argv.(1) in
     (* On récupère les dimensions *)
-    let (w,h) = get_dims img in
+    let (w,h) = Utile.get_dims img in
     (* On crée la surface d'affichage en doublebuffering *)
     let display = Sdlvideo.set_video_mode w h [`DOUBLEBUF] in
+      (* TEST DE PASSAGE NOIR ET BLANC *)
+      Binarization.black_and_white img;
       (* on affiche l'image *)
-      show img display;
+      Utile.show img display;
       (* on attend une touche *)
       wait_key ();
       (* on quitte *)

@@ -11,8 +11,8 @@ val make_matrix : int -> int -> 'a -> 'a array array
 let get_dims img =
 	((Sdlvideo.surface_info img).Sdlvideo.w, (Sdlvideo.surface_info img).Sdlvideo.h)
 
-let level (r,g,b) =
-	int_of_float((0.299 *. r) +. (0.587 *. g) +. (0.114 *. b))
+let level (r,g,b) = 
+  ( 0.3 *. float_of_int(r) +. 0.59 *. float_of_int(g) +. 0.11 *. float_of_int(b))/.255.
 
 (* fonctions pour le tri fusion (en: merge_sort) *)
 
