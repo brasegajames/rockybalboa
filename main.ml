@@ -25,21 +25,17 @@ let main () =
     let display = Sdlvideo.set_video_mode w h [`DOUBLEBUF] in
     let new_img = Sdlvideo.create_RGB_surface_format img [] w h in
       (* TEST DE PASSAGE NOIR ET BLANC *)
-      
-      (*
       Binarization.image2grey img new_img;
       Binarization.black_and_white new_img;
-      *)
-      Bruit.dropthebass 3 img;
       (* on affiche l'image *)
       Utile.show img display;
       (* on attend une touche *)
       wait_key ();
       (* on affiche l'image *)
-      (* Utile.show new_img display;
+      Utile.show new_img display;
       (* on attend une touche *)
-      wait_key (); *)
-      (* on quitte *)
+      wait_key (); 
+     (* on quitte *)
       exit 0
   end
 
