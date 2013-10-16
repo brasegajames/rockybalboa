@@ -1,7 +1,7 @@
 let is_in_bounds x y img =
 	let (w,h) = Utile.get_dims img in
 		x >= 0 && x < w && y >= 0 && y < h
-
+(*
 let coupe_mediane img dst =
 	let (h, w) = Utile.get_dims img in
 		for i = 0 to h-1 do
@@ -17,4 +17,4 @@ let coupe_mediane img dst =
 				Utile.merge_sort liste sorted_liste;
 				Sdlvideo.put_pixel_color dst i j (List.nth (sorted_liste.length/2));
 			done
-		done
+		done *)
