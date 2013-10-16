@@ -1,11 +1,11 @@
 (* pas sur que ça marche *)
 
-let to_grey img =
-	let (w, h) = utile.get_dims img in
-		for i = 0 to w-1 do
-			for j = 0 to h-1 do
-				let c = (utile.level (Sdlvideo.get_color img i j)).color in
-					Sdlvideo.put_pixel_color img i j c
+let to_grey img dst =
+	let (w, h) = Utile.get_dims img in
+		for i = 0 to w do
+			for j = 0 to h do
+				let (color) c = Utile.level (Sdlvideo.get_pixel_color img i j) in
+				Sdlvideo.put_pixel_color dst i j c
 			done
 		done
 

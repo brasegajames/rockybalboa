@@ -1,1 +1,1 @@
-val to_grey : Sdlvideo.surface -> unit
+val to_grey : Sdlvideo.surface -> Sdlvideo.surface -> unit
