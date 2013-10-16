@@ -1,35 +1,20 @@
-(* pas sur que ça marche *)
+let is_in_bounds x y img =
+	let (w,h) = Utile.get_dims img in
+		x >= 0 && x < w && y >= 0 && y < h
 
-let to_grey img dst =
-	let (w, h) = Utile.get_dims img in
-		for i = 0 to w do
-			for j = 0 to h do
-				let (color) c = Utile.level (Sdlvideo.get_pixel_color img i j).toColor in
-				Sdlvideo.put_pixel_color dst i j c
+let coupe_mediane img dst =
+	let (h, w) = Utile.get_dims img in
+		for i = 0 to h-1 do
+			for j = 0 to w-1 do
+				let liste = [] in
+				let sorted_liste = [] in
+				for a = -1 to 1 do
+					for b = -1 to 1 do
+						if (is_in_bounds (i+a) (j+b) img) then
+							(Sdlvideo.get_pixel_color img i j)::liste
+					done;
+				done;
+				Utile.merge_sort liste sorted_liste;
+				Sdlvideo.put_pixel_color dst i j (List.nth (sorted_liste.length/2));
 			done
 		done
-
-(* 
-Gris: quand r=g=b // gris "foncé" quand inf à 180.
-On va donc virer ceux étant sup à 180 en les passant en blanc.
- *)
-
-(*
-let whiterthanwhite img =
-	let (w, h) = utile.get_dim img in
-		for i = 0 to w-1 do
-			for j = 0 to h-1 do
-				let (* jesaispasencore *)
-*)
-(*
-let coupe_mediane img =
-	let (h, w) = utile.get_dim img in
-		for i = 0 to h do
-			for j = 0 to w do
-				let matrix = Array.make h w (Sdlvideo.get_pixel img i j) in
-				if (i = 0) then
-					if (j = 0) then
-						
-			done
-		done
-*)	
