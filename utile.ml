@@ -12,7 +12,7 @@ let get_dims img =
 	((Sdlvideo.surface_info img).Sdlvideo.w, (Sdlvideo.surface_info img).Sdlvideo.h)
 
 let level (r,g,b) = 
-  ( 0.3 *. float_of_int(r) +. 0.59 *. float_of_int(g) +. 0.11 *. float_of_int(b))/.255.
+   (0.3 *. float_of_int(r) +. 0.59 *. float_of_int(g) +. 0.11 *. float_of_int(b))/.255.
 
 (* fonctions pour le tri fusion (en: merge_sort) *)
 
@@ -37,7 +37,6 @@ let rec merge_sort = function
      | [e] -> [e]
      | liste -> let (e1,e2) = split liste in
                             merge (merge_sort e1) (merge_sort e2)
-
 
 (* show img dst : affiche la surface img sur la surface
   de destination dst (normalement l'écran) *)

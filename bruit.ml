@@ -4,7 +4,7 @@ let to_grey img dst =
 	let (w, h) = Utile.get_dims img in
 		for i = 0 to w do
 			for j = 0 to h do
-				let (color) c = Utile.level (Sdlvideo.get_pixel_color img i j) in
+				let (color) c = Utile.level (Sdlvideo.get_pixel_color img i j).toColor in
 				Sdlvideo.put_pixel_color dst i j c
 			done
 		done

@@ -25,26 +25,30 @@ let show img dst =
   let d = Sdlvideo.display_format img in
     Sdlvideo.blit_surface d dst ();
     Sdlvideo.flip dst
- 
+*) 
 
 
 
 
-let level (r,g,b) = ( 0.3 *. float_of_int(r) +. 0.59 *. float_of_int(g) +. 0.11 *. float_of_int(b))/.255.;;
-*)
+let level (r,g,b) = ( 0.3 *. float_of_int(r) +. 0.59 *. float_of_int(g) +. 0.11 *. float_of_int(b))
 
 
-let color2grey (r,g,b) = let l = int_of_float(Utile.level (r,g,b)) in
-l,l,l  ;;
 
+(*let color2grey (r,g,b) = let l = int_of_float(Utile.level (r,g,b)) in
+l,l,l  ;;*)
+
+let color2grey (r,g,b) = 
+  (int_of_float (level (r,g,b)), int_of_float (level (r,g,b)), int_of_float (level (r,g,b)))
 
 let image2grey src dst = 
  let (w,h) = Utile.get_dims src in
-  for i = 0 to w do
-    for j = 0 to h do
+  for i = 0 to w-1 do
+    for j = 0 to h-1 do
     Sdlvideo.put_pixel_color dst i j (color2grey (Sdlvideo.get_pixel_color src i j))
     done
   done
+
+
 
 (* Renvoi la moyenne du level des pixels de l'image (entre 0 et 1) *)
 let averageimage src =
@@ -62,11 +66,11 @@ let averageimage src =
 let black_and_white img =
     let moy = averageimage img in
     let (w,h) = Utile.get_dims img in
-        for i = 0 to w do
-                for j = 0 to h do
+        for i = 0 to w-1 do
+                for j = 0 to h-1 do
                         if Utile.level(Sdlvideo.get_pixel_color img i j) < moy
-                        then Sdlvideo.put_pixel_color img i j (255,255,255) (*applique blanc au pixel*)
-                        else Sdlvideo.put_pixel_color img i j (0,0,0)        (*applique la couleur noir*)
+                        then Sdlvideo.put_pixel_color img i j (0,0,0) (*applique blanc au pixel*)
+                        else Sdlvideo.put_pixel_color img i j (255,255,255)        (*applique la couleur noir*)
                 done
         done
 (*
