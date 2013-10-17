@@ -50,6 +50,31 @@ let display img =
   let (w, h) = get_dims img in
     show img (Sdlvideo.set_video_mode w h [`DOUBLEBUF])
 
+
+let createBoolFromImg src = 
+  let (w,h) = get_dims src in
+    let mat = Array.make_matrix w h false in 
+      for i = 0 to w - 1 do
+        for j = 0 to h - 1 do
+          let (r,_,_) = Sdlvideo.get_pixel_color src i j in
+          if r = 0 then
+            mat.(i).(j) <- true;
+        done;
+      done;
+      mat
+
+
+let createImgFromBool src dst =
+  let w = Array.length src and h = Array.length src.(0) in
+      for i = 0 to w - 1 do
+        for j = 0 to h - 1 do
+          let c = ref (0, 0, 0) in
+            if not(src.(i).(j)) then c := (255, 255, 255);
+            Sdlvideo.put_pixel_color dst i j !c;
+        done;
+      done
+
+
 (* Dessine un rectangle dans une matrice avec
 les coordonnées n de la couleur color *)
 let drawRect m n color =
