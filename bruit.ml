@@ -42,16 +42,39 @@ let apply_mat matrice x y src =
   for i = 0 to 2 do
     for j = 0 to 2 do
       let factor = matrice.(i).(j) in
-        acu := annex2 !acu  (annex (Sdlvideo.get_pixel_color src x y) factor);
-        div := !div +1;
+      if (is_in_bounds (x+i-1) (y+j-1) src)then
+      begin        
+        acu := annex2 !acu  (annex (Sdlvideo.get_pixel_color src (x+i-1) (y+j-1)) factor);
+        div := !div + factor;
+      end
     done;
   done;
-  while ((final (annex3 !acu !div)) = !acu) do
-    acu := final (annex3 !acu !div);
+  acu := annex3 !acu !div;
+  while ((final !acu) <> !acu) do
+    acu := final !acu;
   done;
   !acu
   
 let matrix_int = Array.make_matrix 3 3 0
+
+
+let flou_test img dst =
+  let (h, w) = Utile.get_dims img in
+  matrix_int.(0).(0) <- 1;
+  matrix_int.(0).(1) <- 1;
+  matrix_int.(0).(2) <- 1;
+  matrix_int.(1).(0) <- 1;
+  matrix_int.(1).(1) <- 12;
+  matrix_int.(1).(2) <- 1;
+  matrix_int.(2).(0) <- 1;
+  matrix_int.(2).(1) <- 1;
+  matrix_int.(2).(2) <- 1;
+  for i = 0 to h-1 do
+  for j = 0 to w-1 do
+    Sdlvideo.put_pixel_color dst i j (apply_mat matrix_int i j img);
+  done
+done
+
 
 let flou_gaussien img dst =
   let (h, w) = Utile.get_dims img in
