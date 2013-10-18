@@ -36,12 +36,21 @@ let final (r,g,b) = match (r,g,b) with
   |(_,_,z) when z > 255 -> (r,g,255);
   |(x,y,z) -> (x,y,z)
 
+let choice = function
+  |"contrast" -> [| [|0;-1;0 |] ;[|-1; 5;-1 |] ; [|0;-1; 0|] |]
+  |"flou" -> [| [|1; 1; 1 |] ;[|1;1;1 |] ; [|1; 1; 1 |] |]
+  |"bord" -> [| [|0; 0; 0 |] ;[|-1; 1; 0 |] ; [|0; 0; 0 |] |]
+  |"bordplus" -> [| [|0; 1; 0 |] ;[|1; -4; 1 |] ; [|0; 1; 0 |] |]
+  |"repoussage" -> [| [|-2; -1; 0 |] ;[|-1; 1; 1 |] ; [|0; 1; 2 |] |]
+  |_ -> [| [|0; 0; 0 |] ;[|0; 1; 0 |] ; [|0; 0; 0 |] |]
+
 let apply_mat matrice x y src =
   let acu = ref (0,0,0) in
   let div = ref 0 in
+  let mat = choice matrice in
   for i = 0 to 2 do
     for j = 0 to 2 do
-      let factor = matrice.(i).(j) in
+      let factor = mat.(i).(j) in
       if (is_in_bounds (x+i-1) (y+j-1) src)then
       begin        
         acu := annex2 !acu  (annex (Sdlvideo.get_pixel_color src (x+i-1) (y+j-1)) factor);
@@ -57,24 +66,13 @@ let apply_mat matrice x y src =
   done;
   !acu
 
-let flou_test img dst =
+let filter matrice img dst =
   let (h, w) = Utile.get_dims img in
-  let mat = [| [|-1;-1;-1 |] ;[|-1;17;-1 |] ; [|-1;-1;-1 |] |] in
   for i = 0 to h-1 do
   for j = 0 to w-1 do
-    Sdlvideo.put_pixel_color dst i j (apply_mat mat i j img);
+    Sdlvideo.put_pixel_color dst i j (apply_mat matrice i j img);
   done
 done
-
-let flou_gaussien img dst =
-  let (h, w) = Utile.get_dims img in
-  let mat = [| [|-1;-1;-1 |] ;[|-1;8 ;-1 |] ; [|-1;-1;-1 |] |] in
-  for i = 0 to h-1 do
-  for j = 0 to w-1 do
-    Sdlvideo.put_pixel_color dst i j (apply_mat mat i j img);
-  done
-done
-
 
 
 (*

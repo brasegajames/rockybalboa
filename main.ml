@@ -31,12 +31,10 @@ let main () =
       Binarization.image2grey img new_img;
       Utile.show new_img display;
       wait_key ();
-      (* 
-      Bruit.flou_gaussien new_img new_img;
-      Utile.show new_img display;
+      Bruit.filter "flou" new_img img;
+      Utile.show img display;
       wait_key ();
-      *)
-      Bruit.flou_test new_img new_img;
+      Bruit.filter "contrast" img new_img;
       Utile.show new_img display;
       wait_key ();
       Binarization.black_and_white new_img;
