@@ -1,5 +1,5 @@
 val is_in_bounds : int -> int -> Sdlvideo.surface -> bool
-val coupe_mediane : Sdlvideo.surface -> Sdlvideo.surface -> unit
+val median : Sdlvideo.surface -> Sdlvideo.surface -> unit
 val annex : int * int * int -> int -> int * int * int
 val annex2 : int * int * int -> int * int * int -> int * int * int
 val annex3 : int * int * int -> int -> int -> int * int * int
