@@ -48,8 +48,6 @@ let image2grey src dst =
     done
   done
 
-
-
 (* Renvoi la moyenne du level des pixels de l'image (entre 0 et 1) *)
 let averageimage src =
         let acc = ref 0. in
@@ -68,7 +66,7 @@ let black_and_white img =
     let (w,h) = Utile.get_dims img in
         for i = 0 to w-1 do
                 for j = 0 to h-1 do
-                        if Utile.level(Sdlvideo.get_pixel_color img i j) > moy
+                        if Utile.level(Sdlvideo.get_pixel_color img i j) < moy
                         then Sdlvideo.put_pixel_color img i j (0,0,0) (*applique noir au pixel*)
                         else Sdlvideo.put_pixel_color img i j (255,255,255)        (*applique la couleur blanche *)
                 done
