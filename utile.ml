@@ -51,7 +51,7 @@ let display img =
     show img (Sdlvideo.set_video_mode w h [`DOUBLEBUF])
 
 
-let createBoolFromImg src = 
+let toBool src = 
   let (w,h) = get_dims src in
     let mat = Array.make_matrix w h false in 
       for i = 0 to w - 1 do
@@ -64,7 +64,7 @@ let createBoolFromImg src =
       mat
 
 
-let createImgFromBool src dst =
+let toImg src dst =
   let w = Array.length src and h = Array.length src.(0) in
       for i = 0 to w - 1 do
         for j = 0 to h - 1 do

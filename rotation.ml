@@ -112,6 +112,7 @@ let angleDetection m =
 
 let hough mat = 
         let pi = acos(-1.) and pi02 = asin(1.) in
+        let mat = (Utile.toBool mat) in
         let (w,h) = (Array.length mat,Array.length mat.(0)) in
         let diagonal = int_of_float(sqrt(float_of_int(w*w+ h*h))) in
         let matrice_de_vote = Array.make_matrix diagonal ((int_of_float(pi*.100.))+1) 0 in
@@ -181,6 +182,7 @@ let floatMat t =
 
 (* Fais tourner une image de l'angle a *)
 let rotation img a =
+  let img = (Utile.toBool img) in
   let w = Array.length img and h = Array.length img.(0)
   and src = floatMat img in
     let x0 = float (w / 2) and y0 = float (h / 2)
@@ -191,7 +193,7 @@ let rotation img a =
           get_linear_interpolation src dest w h i j x0 y0 cosa sina;
         done;
       done;
-      dest
+      (Utile.toImg dest)
 
 
 
@@ -200,5 +202,5 @@ let rotation img a =
 
 (* Détecte et fais tourner l'image *)
 let rotate m =
-  let a = (hough m) in
+  let a = hough m in
     rotation m a

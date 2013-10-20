@@ -9,7 +9,7 @@ val nbPoints : int
 val add_min : (int * 'a) array -> (int * 'a) list -> (int * 'a) list
 val get_points : bool array array -> (int * int) list ref
 val angleDetection : bool array array -> float
-val hough : bool array array -> float
+val hough : Sdlvideo.surface -> float
 val get_rotated_coord :
   int -> int -> float -> float -> float -> float -> float * float
 val get_linear_interpolation :
@@ -17,5 +17,5 @@ val get_linear_interpolation :
   bool array array ->
   int -> int -> int -> int -> float -> float -> float -> float -> unit
 val floatMat : bool array array -> float array array
-val rotation : bool array array -> float -> bool array array
-val rotate : bool array array -> bool array array
+val rotation : Sdlvideo.surface -> float -> Sdlvideo.surface -> unit
+val rotate : Sdlvideo.surface -> Sdlvideo.surface -> unit
