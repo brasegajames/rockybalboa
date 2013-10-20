@@ -25,7 +25,7 @@ let annex (r,g,b) factor = (factor * r, factor * g, factor * b)
 
 let annex2 (a,b,c) (d,e,f) = (a+d, b+e, c+f)
 
-let annex3 (r,g,b) div = (r/div, g/div, b/div)
+let annex3 (r,g,b) div plus = (r/div + plus, g/div + plus , b/div + plus)
 
 let final (r,g,b) = match (r,g,b) with
   |(x,_,_) when x < 0 -> (0,g,b);
@@ -37,30 +37,39 @@ let final (r,g,b) = match (r,g,b) with
   |(x,y,z) -> (x,y,z)
 
 let choice = function
+  |"medium" -> [| [|1;1;1 |] ;[|1; 0;1 |] ; [|1;1; 1|] |]
+  |"eroder" -> [| [|0; 1; 0 |] ;[|1; 1; 1 |] ; [|0; 1; 0 |] |]
   |"contrast" -> [| [|0;-1;0 |] ;[|-1; 5;-1 |] ; [|0;-1; 0|] |]
   |"flou" -> [| [|1; 1; 1 |] ;[|1;1;1 |] ; [|1; 1; 1 |] |]
   |"bord" -> [| [|0; 0; 0 |] ;[|-1; 1; 0 |] ; [|0; 0; 0 |] |]
   |"bordplus" -> [| [|0; 1; 0 |] ;[|1; -4; 1 |] ; [|0; 1; 0 |] |]
   |"repoussage" -> [| [|-2; -1; 0 |] ;[|-1; 1; 1 |] ; [|0; 1; 2 |] |]
+  |"gaussien" -> [| [|1; 2; 1 |] ;[|2; 4; 2|] ; [|1; 2; 1 |] |]
   |_ -> [| [|0; 0; 0 |] ;[|0; 1; 0 |] ; [|0; 0; 0 |] |]
 
 let apply_mat matrice x y src =
   let acu = ref (0,0,0) in
   let div = ref 0 in
+  let plus = ref 0 in
   let mat = choice matrice in
   for i = 0 to 2 do
     for j = 0 to 2 do
       let factor = mat.(i).(j) in
-      if (is_in_bounds (x+i-1) (y+j-1) src)then
+      if (is_in_bounds (x+i-1) (y+j-1) src) then
       begin        
         acu := annex2 !acu  (annex (Sdlvideo.get_pixel_color src (x+i-1) (y+j-1)) factor);
         div := !div + factor;
       end
     done;
   done;
-  if (!div <= 0) then 
-    div := 1;
-  acu := annex3 !acu !div;
+
+  let _ = match !div with
+     0 -> div := 1; plus := 128;
+    |x when x < 0 -> div := -(!div); plus := 255;
+    |x -> div := !div;
+  in
+
+  acu := annex3 !acu !div !plus;
   while ((final !acu) <> !acu) do
     acu := final !acu;
   done;
@@ -74,6 +83,21 @@ let filter matrice img dst =
   done
 done
 
+(*let alone img dst =
+  let (w,h) = Utile.get_dims img and moy = ref 0 and div = ref 0 in
+  for i = 0 to w-1 do
+  for j = 0 to h-1 do
+    for a = -1 to 1 do
+    for b = -1 to 1 do
+      if (is_in_bounds (i+a) (j+b) img) then
+        moy := !moy + (Sdlvideo.get_pixel_color img (i+a) (j+b));
+        div := !div + 1;
+    done
+    done
+    if (moy < 150
+  done
+  done*)
+  
 
 (*
 let dropthebass n src =

@@ -68,9 +68,9 @@ let black_and_white img =
     let (w,h) = Utile.get_dims img in
         for i = 0 to w-1 do
                 for j = 0 to h-1 do
-                        if Utile.level(Sdlvideo.get_pixel_color img i j) < moy
-                        then Sdlvideo.put_pixel_color img i j (0,0,0) (*applique blanc au pixel*)
-                        else Sdlvideo.put_pixel_color img i j (255,255,255)        (*applique la couleur noir*)
+                        if Utile.level(Sdlvideo.get_pixel_color img i j) > moy
+                        then Sdlvideo.put_pixel_color img i j (0,0,0) (*applique noir au pixel*)
+                        else Sdlvideo.put_pixel_color img i j (255,255,255)        (*applique la couleur blanche *)
                 done
         done
 (*

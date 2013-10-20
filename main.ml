@@ -31,17 +31,21 @@ let main () =
       Binarization.image2grey img new_img;
       Utile.show new_img display;
       wait_key ();
-      Bruit.filter "flou" new_img img;
+      Bruit.filter "bordplus" new_img img;
       Utile.show img display;
       wait_key ();
-      Bruit.filter "contrast" img new_img;
+      Bruit.filter "flou" img new_img;
       Utile.show new_img display;
       wait_key ();
       Binarization.black_and_white new_img;
       Utile.show new_img display;
       wait_key();
-      Utile.show img display;
-      wait_key();
+      (*Bruit.filter "eroder" img new_img;
+      Utile.show new_img display;
+      wait_key (); 
+      Binarization.black_and_white new_img;
+      Utile.show new_img display;
+      wait_key();*)
      (* on quitte *)
       exit 0
   end
