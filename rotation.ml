@@ -93,6 +93,7 @@ let l = ref [] and x = ref 0 and  y = ref 0
 
 (* detecte l'angle de rotation *)
 let angleDetection m =
+  let m = (Utile.toBool m) in
   let l = get_points m in
   let a = ref (slope !l) in
   let a1 = !a in
@@ -142,7 +143,7 @@ let hough mat =
                 end;
            done;
         done;
-        (!teta_max +. (pi02 /. 2.))
+        (!teta_max)
 
 
 let get_rotated_coord x y x0 y0 cosa sina = 
@@ -201,6 +202,10 @@ let rotation img a =
 
 
 (* Détecte et fais tourner l'image *)
-let rotate m =
+let rotate1 m =
   let a = hough m in
+    rotation m a
+
+let rotate2 m =
+  let a = angleDetection m in
     rotation m a
