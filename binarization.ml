@@ -66,11 +66,23 @@ let black_and_white img =
     let (w,h) = Utile.get_dims img in
         for i = 0 to w-1 do
                 for j = 0 to h-1 do
-                        if Utile.level(Sdlvideo.get_pixel_color img i j) < moy
+                        if Utile.level(Sdlvideo.get_pixel_color img i j) < moy -.0.12
                         then Sdlvideo.put_pixel_color img i j (0,0,0) (*applique noir au pixel*)
                         else Sdlvideo.put_pixel_color img i j (255,255,255)        (*applique la couleur blanche *)
                 done
         done
+
+let parasite img =
+  let (w,h) = Utile.get_dims img in
+      for i = 0 to w-1 do
+        for j = 0 to h-1 do
+          if Sdlvideo.get_pixel_color img i j = (0,0,0) then
+            if Sdlvideo.get_pixel_color img (i-1) j = (255,255,255) && Sdlvideo.get_pixel_color img (i+1) j = (255,255,255)
+                && Sdlvideo.get_pixel_color img i (j-1) = (255,255,255) && Sdlvideo.get_pixel_color img i (j+1) = (255,255,255)
+            then Sdlvideo.put_pixel_color img i j (255,255,255)
+        done
+      done
+      
 (*
 (* main *)
 let main () =
