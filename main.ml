@@ -100,6 +100,9 @@ let main () =
       Rotation.rotate2 img new_img;
       Utile.show new_img display;
       wait_key();
+      
+      Utile.show new_img display;
+      wait_key();
      (* on quitte *)
       exit 0;
   end
