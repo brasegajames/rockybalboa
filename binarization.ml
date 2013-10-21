@@ -72,7 +72,7 @@ let black_and_white img =
                 done
         done
 
-let parasite img dst=
+let parasite img =
   let (w,h) = Utile.get_dims img in
       for i = 0 to w-1 do
         for j = 0 to h-1 do
