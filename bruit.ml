@@ -19,7 +19,7 @@ let median img dst =
 		done;
 		done;
 		let sorted_li = Utile.merge_sort !li in
-		Sdlvideo.put_pixel dst i j (List.nth sorted_li ((List.length sorted_li) /2));
+		Sdlvideo.put_pixel dst i j (List.nth sorted_li ((List.length sorted_li) /2 +1));
 	done
 	done
 
@@ -46,7 +46,7 @@ let choice = function
   |"bord" -> [| [|0; 0; 0 |] ;[|-1; 1; 0 |] ; [|0; 0; 0 |] |]
   |"bordplus" -> [| [|0; 1; 0 |] ;[|1; -4; 1 |] ; [|0; 1; 0 |] |]
   |"repoussage" -> [| [|-2; -1; 0 |] ;[|-1; 1; 1 |] ; [|0; 1; 2 |] |]
-  |"gaussien" -> [| [|1; 2; 1 |] ;[|2; 4; 2|] ; [|1; 2; 1 |] |]
+  |"gaussian" -> [| [|1; 2; 1 |] ;[|2; 4; 2|] ; [|1; 2; 1 |] |]
   |_ -> [| [|0; 0; 0 |] ;[|0; 1; 0 |] ; [|0; 0; 0 |] |]
 
 let apply_mat matrice x y src =
