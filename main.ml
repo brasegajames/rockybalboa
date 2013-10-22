@@ -87,10 +87,13 @@ let main () =
       Binarization.image2grey img new_img;
       Utile.show new_img display;
       wait_key ();
-      Bruit.median new_img img;
+      Bruit.filter "gaussien" new_img img;
       Utile.show img display;
       wait_key ();
       Binarization.black_and_white img;
+      Utile.show img display;
+      wait_key ();
+      Binarization.parasite img;
       Utile.show img display;
       wait_key ();
       print_float (Rotation.angleDetection img); 
@@ -101,9 +104,6 @@ let main () =
 *)
        
       Rotation.rotate2 img new_img;
-      Utile.show new_img display;
-      wait_key();
-      
       Utile.show new_img display;
       wait_key();
      (* on quitte *)
