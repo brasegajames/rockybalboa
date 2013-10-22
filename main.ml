@@ -24,6 +24,9 @@ let main () =
     (* On crée la surface d'affichage en doublebuffering *)
     let display = Sdlvideo.set_video_mode w h [`DOUBLEBUF] in
     let new_img = Sdlvideo.create_RGB_surface_format img [] w h in
+
+    (* image2grey -> gaussien -> blackandwhite -> parasite *)
+
       (* on affiche l'image *)
       Utile.show img display;
       (* on attend une touche *)

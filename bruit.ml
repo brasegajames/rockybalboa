@@ -5,8 +5,6 @@ let is_in_bounds x y img =
   else
     false
 
-(* Associer median puis gaussien pour enlever le bruit, c'est not bad *)
-
 let median img dst =
 	let (h, w) = Utile.get_dims img in
 	for i = 0 to h-1 do
