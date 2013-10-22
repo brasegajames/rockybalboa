@@ -10,6 +10,7 @@ let rec wait_key () =
     Sdlevent.KEYDOWN _ -> ()
       | _ -> wait_key ()
 
+(*
 let main () =
   begin
     (* Nous voulons 1 argument *)
@@ -63,9 +64,9 @@ let main () =
       exit 0
   end
 
+*)
 
 
-(*
 let main () =
   begin
     (* Nous voulons 1 argument *)
@@ -83,24 +84,31 @@ let main () =
       (* TEST DE PASSAGE NOIR ET BLANC *)
       Utile.show img display;
       wait_key ();
+      Binarization.image2grey img new_img;
+      Utile.show new_img display;
+      wait_key ();
+      Bruit.median new_img img;
+      Utile.show img display;
+      wait_key ();
       Binarization.black_and_white img;
       Utile.show img display;
       wait_key ();
-      print_float (Rotation.hough img); 
-
+      print_float (Rotation.angleDetection img); 
+(*
       Rotation.rotate2 img new_img;
       Utile.show new_img display;
       wait_key ();
-
-      Rotation.rotate1 img new_img;
+*)
+       
+      Rotation.rotate2 img new_img;
       Utile.show new_img display;
       wait_key();
-
-      Utile.show img display;
+      
+      Utile.show new_img display;
       wait_key();
      (* on quitte *)
       exit 0;
   end
-*)
+
 
 let _ = main ()

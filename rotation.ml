@@ -107,7 +107,7 @@ let angleDetection m =
   if atan a1 < 0.2 & atan a1 > -0.2 then
     atan a1 (* angle initial trouve quasi nul *)
   else
-          (-. atan (1. /. !a))
+          ( atan (1. /. !a))
         
 
 
@@ -143,7 +143,7 @@ let hough mat =
                 end;
            done;
         done;
-        (!teta_max)
+        (!teta_max +. (pi02 /. 2.))
 
 
 let get_rotated_coord x y x0 y0 cosa sina = 
