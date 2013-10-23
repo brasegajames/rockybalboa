@@ -38,10 +38,10 @@ let add_block a b init step seuil vert blocks =
 	!i - !nb_blanc
 
 let get_block a block step vert =
-	Printf.printf "get_block\n";
+	(* Printf.printf "get_block\n"; *)
 	let blocks = ref [] in
 	let seuil = (if vert then block.w - 3 else block.h - 10)(*a.(Histo.histogram_median a) * 120 / 100*) in
-	Printf.printf "seuil: %d\n" seuil;
+	(* Printf.printf "seuil: %d\n" seuil; *)
 	let i = ref 0 in
 	while !i < Array.length a do
 		(*Printf.printf "a.(%d) : %d\n" !i a.(!i);*)
@@ -49,7 +49,7 @@ let get_block a block step vert =
 		 	i := add_block a block !i step seuil vert blocks;
 		incr i
 	done;
-	Printf.printf "nbblocks: %d\n" (List.length !blocks);
+	(* Printf.printf "nbblocks: %d\n" (List.length !blocks); *)
 	Array.of_list !blocks
 
 let draw_blocks img blocks =
