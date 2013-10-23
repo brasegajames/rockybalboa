@@ -86,26 +86,19 @@ let main () =
       wait_key ();
       Binarization.image2grey img new_img;
       Utile.show new_img display;
-      wait_key ();
       Bruit.filter "gaussien" new_img img;
       Utile.show img display;
-      wait_key ();
       Binarization.black_and_white img;
       Utile.show img display;
-      wait_key ();
       Binarization.parasite img;
       Utile.show img display;
-      wait_key ();
-      print_float (Rotation.angleDetection img); 
-(*
+      print_float (Rotation.angleDetection img);
       Rotation.rotate2 img new_img;
       Utile.show new_img display;
-      wait_key ();
-*)
-       
-      Rotation.rotate2 img new_img;
+      Xy_cut.test_blocks new_img;  
       Utile.show new_img display;
-      wait_key();
+      Printf.printf "xycut\n";
+      wait_key ();
      (* on quitte *)
       exit 0;
   end

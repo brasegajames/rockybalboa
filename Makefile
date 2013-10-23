@@ -5,7 +5,7 @@ OCAMLC= ocamlc
 OCAMLFLAGS= -I +sdl -I +site-lib/sdl
 OCAMLLD= bigarray.cmxa sdl.cmxa sdlloader.cmxa
 CAMLDEP= ocamldep
-FILES= utile.mli utile.ml bruit.mli bruit.ml binarization.mli binarization.ml rotation.mli rotation.ml main.ml 
+FILES= utile.mli utile.ml bruit.mli bruit.ml binarization.mli binarization.ml rotation.mli rotation.ml   xy_cut.ml main.ml 
 
 OCR: ${FILES}
 	${OCAMLOPT} ${OCAMLFLAGS} ${OCAMLLD} -o ${EXEC} ${FILES}

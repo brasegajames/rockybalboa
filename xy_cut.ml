@@ -92,5 +92,5 @@ let rec xy_cut_rec =
 
 let test_blocks img = 
  	let (width,height) = Utile.get_dims img in 
- 		xy_cut_rec img { x = 0; y = 0; w = width; h = height } [|10; 40; 2; 20|] 2 true
+ 		xy_cut_rec img { x = 0; y = 0; w = width; h = height } [|10; 25; 2; 20|] 2 true
  																(* pas      nb_iter  true:vert*)
