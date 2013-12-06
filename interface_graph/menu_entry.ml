@@ -13,16 +13,16 @@ open GdkKeysyms
 let _ = GtkMain.Main.init ()
 
 
-(* Pour ouvrir un nouveau fichier ??? *)
+(* Pour ouvrir un nouveau fichier *)
 let file_dialog ~title ~callback ?filename filter () =
   let sel =
     GWindow.file_selection ~title ~modal:true ?filename () in
     sel#complete filter ;
     sel#cancel_button#connect#clicked ~callback:sel#destroy;
     sel#ok_button#connect#clicked ~callback:
-      begin fun () -> let name = sel#filename in
+      begin (fun () -> let name = sel#filename in
       sel#destroy ();
-      callback name
+      callback name)
     end;
   sel#show ()
 
@@ -311,7 +311,6 @@ let xpm_label_box ~file ~text ~packing () =
 let bouton image str titre =
   let window5 = GWindow.window ~title:titre ~border_width:10 () in
     window5#event#connect#delete ~callback:(fun _ -> window5#destroy (); true);
-
     let button = GButton.button ~packing:window5#add () in
       button#connect#clicked ~callback:(fun () -> window5#destroy ());
       xpm_label_box ~file:image ~text:str ~packing:button#add ();
@@ -358,15 +357,15 @@ class interface vbox av ?packing ?show () =
   val mutable trait = 0
   val mutable extract = 0
   val mutable export = 0
-  (* val mutable matrice = Transfert.pretreatment " " 1      (* JE SAIS PAAAAAS *)
-  val mutable reseau = new Neurones.neural_network; *)
+ (* val mutable matrice = Transfert.pretreatment " " 1  *)    (* JE SAIS PAAAAAS *)
+(* val mutable reseau = new Neurones.neural_network; *)
   val pack = GPack.notebook ~tab_pos:`TOP ~width:800 ~height:550 ~packing:vbox#add ()
   val pbar = GRange.progress_bar ~packing:av#add ()
 
   method init () =
     begin
       let label = GMisc.label ~text:"Bienvenue !" () in
-  GMisc.image ~file:"img/logo.png" (); (* NE PAS OUBLIER LOGO DE BIENVENUE logo.png *) (* a jarté : ~packing:(pack#append_page ~tab_label:label#coerce) *)
+  GMisc.image ~file:"img/logo.png" (* NE PAS OUBLIER LOGO DE BIENVENUE logo.png *) ~packing:pack#add ();
   pbar#set_text "Bienvenue !";
     end
 
@@ -381,7 +380,7 @@ class interface vbox av ?packing ?show () =
   method onglet texte img =
    let label = GMisc.label ~text:texte () in
    let scrolled_window = GBin.scrolled_window
-     ~hpolicy:`AUTOMATIC ~vpolicy:`AUTOMATIC () in
+     ~hpolicy:`AUTOMATIC ~vpolicy:`AUTOMATIC ~packing:pack#add () in
    let _ = GMisc.image ~file:img ~packing:scrolled_window#add_with_viewport () in
      ();
 
@@ -392,14 +391,14 @@ class interface vbox av ?packing ?show () =
 (* ---- Chargement d'une image ---- *)
 (*----------------------------------*)
 
-  method open_image () =
-    file_dialog ~title:"Charger une image" ~callback:self#load_image "*.jpg" ();
+method open_image () =
+  file_dialog ~title:"Charger une image" ~callback:self#load_image "*.jpg" ();
 
   method load_image name =
     if not (verif_file name "img") then
       bouton "img/jpg.gif" "Le fichier n'est pas une image" "Erreur lors du chargement"
     else
-      begin
+      begin  (* FOUS GRAVE LA MAYRDE *)
   if trait = 1 then Gc.full_major ();
   self#affichage 100 "Image chargée";
   pack#remove_page pack#current_page;
@@ -562,7 +561,7 @@ class interface vbox av ?packing ?show () =
       export <- 1;
       let label = GMisc.label ~text:"Votre texte :p" () in
       let scrolled_window = GBin.scrolled_window
-  ~hpolicy:`AUTOMATIC ~vpolicy:`AUTOMATIC () in
+  ~hpolicy:`AUTOMATIC ~vpolicy:`AUTOMATIC () ~packing:pack#add in
       let s = f_to_string "tmp/exportation.html" in
   buffer#set_text s;
   let txt = GText.view ~buffer:buffer ~cursor_visible:true ~editable:true ~packing:scrolled_window#add_with_viewport () in
