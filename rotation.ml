@@ -1,6 +1,8 @@
+let pi = acos (-1.) and pi_over_2 = asin 1. and pi_over_4 = (atan2 1. 1.)
 
-(* moyenne *)
 
+
+(*
 (* Somme de chaque composante *)
 let rec sum a b = function  
   |[] -> (a, b)
@@ -145,7 +147,7 @@ let hough mat =
         done;
         (!teta_max +. (pi02 /. 2.))
 
-
+*)
 let get_rotated_coord x y x0 y0 cosa sina = 
   let a = ((float x) -. x0) *. cosa -. ((float y) -. y0) *. sina +. x0
   and b = ((float x) -. x0) *. sina +. ((float y) -. y0) *. cosa +. y0 in
@@ -201,11 +203,102 @@ let rotation img a =
 
 
 
+
+let img2matrice img =
+    let(w,h) = Utile.get_dims img in
+    let matrice = Array.make_matrix w h (255,255,255) in
+    for y=0 to h-1 do
+        for x=0 to w-1 do
+            matrice.(x).(y) <- Sdlvideo.get_pixel_color img x y
+        done;
+    done;
+        (matrice)
+
+
+        (* Créé une matrice blanche *)
+let creat_white_mat x y = 
+    let matrix = Array.make_matrix x y (255,255,255) in
+    (matrix)
+
+
+
+let reduce oldMat =
+  let (w,h) = (Array.length oldMat,Array.length oldMat.(0)) in
+    let newMat = creat_white_mat(w/2)(h/2) in
+  for y = 0 to h/2 -1 do
+    for x = 0 to w/2 -1 do
+            if(oldMat.(x).(y) =(0,0,0)) then
+            begin
+              newMat.(x).(y) <- oldMat.(x).(y)
+            end    
+          done;
+  done;
+  (newMat)
+  
+
+
+(* matrice est une image transformée en tableau de pixel *)
+let hough2 matrice =
+  let matrice = reduce (img2matrice (matrice)) in
+    (* Constantes *)
+    let (w,h) = (Array.length matrice,Array.length matrice.(0)) in
+    let diagonal = int_of_float(sqrt(float_of_int(w*w+ h*h))) in
+    let matrice_de_vote = Array.make_matrix diagonal ((int_of_float(pi*.100.))+1) 0 in
+    (* Variables *)
+let teta_max = ref 0. in
+let vote_max = ref 0  in
+(* Parcours de l'image *)
+for y=0 to h-1 do
+    for x=0 to w-1 do
+        if (matrice.(x).(y) = (0,0,0)) then
+            begin
+                (* Test l'angle qu'on fera varier de -pi/2 a pi/2 *)
+                let t = ref(-.pi_over_2) in
+                (* Parcours de l'intervalle d'angle  *)                   
+                while ( !t <= pi_over_2 ) do
+                    let droite =int_of_float(((float y) *. (cos !t))+.((float
+                    x) *. (sin !t))) in
+                    if droite >= 0 then (* Remplissement du tableau de vote *)
+                        begin
+                            let teta_i = int_of_float(!t*.100. +. pi_over_2*.100.)in
+                            matrice_de_vote.(droite).(teta_i) <-
+                                matrice_de_vote.(droite).(teta_i)+1;
+                                if !vote_max < matrice_de_vote.(droite).(teta_i) then
+                                    begin
+                                        vote_max := matrice_de_vote.(droite).(teta_i);
+                                        teta_max := !t;
+                                    end;
+                                    end;
+                                    t := !t +. 0.01; (* Incrémentation de l'angle de 0.01 *) 
+                done;
+                        end;
+                done;
+    done;
+    print_float(!teta_max);
+    (!teta_max)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 (* Détecte et fais tourner l'image *)
 let rotate1 m =
-  let a = hough m in
+  let a = hough2 m in
     rotation m a
-
+(*
 let rotate2 m =
   let a = angleDetection m in
     rotation m a
+
+*)
