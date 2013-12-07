@@ -40,7 +40,7 @@ let main () =
       Utile.show img display;
       wait_key ();
       (* print_float (Rotation.angleDetection img); *)
-      Rotation.rotate2 img new_img;
+      Rotation.rotate1 img new_img;
       Utile.show new_img display;
       Xy_cut.test_blocks new_img;  
       Utile.show new_img display;
