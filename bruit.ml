@@ -62,13 +62,11 @@ let apply_mat matrice x y src =
       end
     done;
   done;
-
   let _ = match !div with
      0 -> div := 1; plus := 128;
     |x when x < 0 -> div := -(!div); plus := 255;
     |x -> div := !div;
   in
-
   acu := annex3 !acu !div !plus;
   while ((final !acu) <> !acu) do
     acu := final !acu;

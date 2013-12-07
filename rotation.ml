@@ -274,21 +274,8 @@ for y=0 to h-1 do
                         end;
                 done;
     done;
-    print_float(!teta_max);
+    (* print_float(!teta_max); *)
     (!teta_max)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -4,50 +4,31 @@ let sdl_init () =
     Sdlevent.enable_events Sdlevent.all_events_mask;
   end
 
-let rec wait_key () =
-  let e = Sdlevent.wait_event () in
-    match e with
-    Sdlevent.KEYDOWN _ -> ()
-      | _ -> wait_key ()
+let keepit file = Sdlloader.load_image file
 
-let main () =
-  begin
-    (* Nous voulons 1 argument *)
-    if Array.length (Sys.argv) < 2 then
-      failwith "Il manque le nom du fichier!";
-    (* Initialisation de SDL *)
-    sdl_init ();
+let pretreatment file filter =
     (* Chargement d'une image *)
-    let img = Sdlloader.load_image Sys.argv.(1) in
+    let img = Sdlloader.load_image file in
     (* On récupère les dimensions *)
     let (w,h) = Utile.get_dims img in
     (* On crée la surface d'affichage en doublebuffering *)
-    let display = Sdlvideo.set_video_mode w h [`DOUBLEBUF] in 
     let new_img = Sdlvideo.create_RGB_surface_format img [] w h in
-      (* TEST DE PASSAGE NOIR ET BLANC *)
-      Utile.show img display;
-      wait_key ();
       Binarization.image2grey img new_img;
-      Utile.show new_img display;
-      wait_key ();
-      Bruit.filter "gaussien" new_img img;
-      Utile.show img display;
-      wait_key ();
+      Bruit.filter filter new_img img;
       Binarization.black_and_white img;
-      Utile.show img display;
-      wait_key ();
       Binarization.parasite img;
-      Utile.show img display;
-      wait_key ();
-      (* print_float (Rotation.angleDetection img); *)
-      Rotation.rotate1 img new_img;
-      Utile.show new_img display;
-      Xy_cut.test_blocks new_img;  
-      Utile.show new_img display;
-      wait_key ();
-     (* on quitte *)
-      exit 0;
-  end
+      Sdlvideo.save_BMP img "tmp/ocr_img.pgm";
+      img
+
+let rotation file =
+    let img = Sdlloader.load_image file in
+    let (w,h) = Utile.get_dims img in
+    let new_img = Sdlvideo.create_RGB_surface_format img [] w h in
+        Rotation.rotate1 img new_img;
+        Sdlvideo.save_BMP new_img "tmp/ocr_rota.pgm"
 
 
-let _ = main ()
+let xycut file = 
+    let img = Sdlloader.load_image file in
+    Xy_cut.test_blocks img;
+        Sdlvideo.save_BMP img "tmp/ocr_cut.pgm"

@@ -12,7 +12,6 @@ open GdkKeysyms
 
 let _ = GtkMain.Main.init ()
 
-
 (* Pour ouvrir un nouveau fichier *)
 let file_dialog ~title ~callback ?filename filter () =
   let sel =
@@ -130,26 +129,23 @@ let print_char entree =
 
 
 
-
-
 (* Class option et doc*)
 
   class options_document = object
-val mutable num_filtre = 2 (* COmbien on aura de filtres ? Désgignera le filtre ? *)
-val mutable t_doc = 5 (* JESAISPASLOLOLOLOLOLOL *)
-val mutable nom_profil = "aucun" (* Nom du filtre sélectionné ? *)
+val mutable num_filtre = 2 (* Numéro du filtre *)
+val mutable nom_profil = "aucun" (* Nom du filtre sélectionné *)
 
 method filtre name () = num_filtre <- name;
-  Printf.printf "Filtre n°%d\n" num_filtre;
-
-method doc name () = t_doc <- name;
-  Printf.printf "Type de document n°%d\n" t_doc;
+match name with
+  |1 -> nom_profil <- "gaussian"
+  |2 -> nom_profil <-"medium"
+  |3 -> nom_profil <-"bords"
+  |4 -> nom_profil <-"eroder"
+  |_ -> nom_profil <-"gaussian"
 
 method profil entry () = nom_profil <- entry;
 
 method return_filtre () = num_filtre
-
-method return_doc () = t_doc
 
 method return_profil () = nom_profil
 end
@@ -180,7 +176,7 @@ let option () =
   let box3 = GPack.hbox ~border_width:30 ~packing:box1#add () in
   let _ = GMisc.separator `HORIZONTAL ~packing:box3#add () in
   let filter (label, filtre) = make_menu_item ~label ~packing:menu#append ~callback:(opt_doc#filtre filtre) in
-    List.iter filter [("filtre1", 1); ("filtre2", 2); ("filtre3", 3); ("filtre4", 4)];
+    List.iter filter [("gaussien", 1); ("medium", 2); ("bords", 3); ("eroder", 4)];
  let button = GButton.button ~label:"Quitter" ~packing:box1#add () in
     button#connect#clicked ~callback:(fun () -> window1#destroy ());
     window1#show ()
@@ -265,37 +261,6 @@ let option () =
 
 
 
-(*----------------------------*)
-(* ---- Type de document ---- *)
-(*----------------------------*)
-
- let document () =
-   let window4 = GWindow.window ~title:"Type de document à traiter" ~border_width:20 () in
-     window4#event#connect#delete ~callback:(fun _ -> window4#destroy (); true);
-
-  let box1 = GPack.vbox ~packing:window4#add () in
-  let frame = GBin.frame ~label:"Choix du document" ~packing:box1#add () in
-    GMisc.label ~text:"Choisissez le type de document que le projet OCR - RockyBalboa doit analyser" ~packing:frame#add ();
-
-  let box2 = GPack.hbox ~border_width:30 ~packing:box1#add () in
-  let _ = GMisc.label ~text:"Type de document (par défaut tout)" ~packing:box2#add () in
-  let opt = GMenu.option_menu ~packing:box2#add () in
-  let menu = GMenu.menu ~packing:opt#set_menu () in
-  let box3 = GPack.hbox ~border_width:30 ~packing:box1#add () in
-  let _ = GMisc.separator `HORIZONTAL ~packing:box3#add () in
-
-    let filter (label, filtre) =
-      make_menu_item ~label ~packing:menu#append
-  ~callback:(opt_doc#doc filtre) in   (* LES DIFFERENTS TYPES DE DOCS POUR FACILITER *)
-      List.iter filter [("Texte seul", 1); ("Texte + image", 2); ("Colonnes", 3); ("Texte + tableau", 4); ("Tout", 5)]; 
-
- let button = GButton.button ~label:"Quitter" ~packing:box1#add () in
-    button#connect#clicked ~callback:(fun () -> window4#destroy ());
-    window4#show ()
-
-
-
-
 (*-------------------*)
 (* ---- Boutons ---- *)
 (*-------------------*)
@@ -335,8 +300,18 @@ let choix_nom titre txt entry ~callback =
       button#connect#clicked ~callback:(fun () -> (opt_doc#profil entry#text ();
                                                   callback ();
                                                   window6#destroy ()));
-      window6#show ();
+      window6#show ()
 
+
+
+(*-------------------------------*)
+(* --- Initialisation de SDL --- *)
+(*-------------------------------*)
+let sdl_init () =
+  begin
+    Sdl.init [`EVERYTHING];
+    Sdlevent.enable_events Sdlevent.all_events_mask
+  end
 
 
 
@@ -357,14 +332,13 @@ class interface vbox av ?packing ?show () =
   val mutable trait = 0
   val mutable extract = 0
   val mutable export = 0
- (* val mutable matrice = Transfert.pretreatment " " 1  *)    (* JE SAIS PAAAAAS *)
+  val mutable matrice = Main.keepit "lena.jpg" (* JE SAIS PAAAAAS si ça maaaaarche*)
 (* val mutable reseau = new Neurones.neural_network; *)
   val pack = GPack.notebook ~tab_pos:`TOP ~width:800 ~height:550 ~packing:vbox#add ()
   val pbar = GRange.progress_bar ~packing:av#add ()
 
   method init () =
     begin
-      let label = GMisc.label ~text:"Bienvenue !" () in
   GMisc.image ~file:"img/logo.png" (* NE PAS OUBLIER LOGO DE BIENVENUE logo.png *) ~packing:pack#add ();
   pbar#set_text "Bienvenue !";
     end
@@ -378,7 +352,6 @@ class interface vbox av ?packing ?show () =
       ~callback:(fun file -> self#output ~file) "" ();
 
   method onglet texte img =
-   let label = GMisc.label ~text:texte () in
    let scrolled_window = GBin.scrolled_window
      ~hpolicy:`AUTOMATIC ~vpolicy:`AUTOMATIC ~packing:pack#add () in
    let _ = GMisc.image ~file:img ~packing:scrolled_window#add_with_viewport () in
@@ -401,10 +374,10 @@ method open_image () =
       begin
   if trait = 1 then Gc.full_major ();
   self#affichage 100 "Image chargée";
+  while trait >= 0 do
   pack#remove_page pack#current_page;
-  pack#remove_page pack#current_page;
-  pack#remove_page pack#current_page;
-  pack#remove_page pack#current_page;
+  trait <- trait - 1;
+done;
   self#onglet "Image à utiliser" name;
   fichier_img <- name;
   trait <- 0;
@@ -437,13 +410,6 @@ method open_image () =
   method apropos () = apropos ();
 
 
-(*---------------------------------*)
-(* ------ Choix du document ------ *)
-(*---------------------------------*)
-
-  method doc () = document ();
-
-
 (*--------------------------*)
 (* ------ Avancement ------ *)
 (*--------------------------*)
@@ -454,163 +420,43 @@ method open_image () =
       ();
     end
 
+(* ---------------------------- *)
+(* ------ Xy_cut l'image ------ *)
+(* ---------------------------- *)
 
-(*-----------------------------------------*)
-(* ------ Extraction des caractères ------ *)
-(*-----------------------------------------*)
+  method xycut () =
+    begin
+      if fichier_img <> "aucun" then
+  begin
+    Main.xycut fichier_img;
+    self#affichage 100 "Découpage terminé";
+    trait <- 3;
+    self#onglet "Cut" "tmp/ocr_cut.pgm";
+    pack#goto_page 3;
+    fichier_img <- "tmp/ocr_cut.pgm";
+  end
+      else
+  bouton "img/check.gif" "Image non chargée" "Erreur lors du chargement"
+    end
 
-  method extraction () =
+
+(*-----------------------------------*)
+(* ------ Rotation de l'image ------ *)
+(*-----------------------------------*)
+
+  method rotation () =
     begin
     if fichier_img <> "aucun" then
       begin
-        if export = 1 then 
-          pack#remove_page 3;
-        export <- 0;
-        if extract = 1 then 
-          pack#remove_page 2;
-        if trait = 0 then 
-          self#traiting ();
-        extract <- 1;
-        (* -- Extraction -- *)  
-    (* EXTRACTION PAS ENCORE FAIIIIIITE
-        Extraction.fn_extraction matrice (opt_doc#return_doc ()) self;
-    *)
-        self#onglet "Visualisation" "tmp/ocr_img_visu.ppm";
-        pack#goto_page 2; 
-        
+    Main.rotation fichier_img;
+      self#affichage 100 "Rotation terminé";
+      trait <- 2;
+      self#onglet "Rotation" "tmp/ocr_rota.pgm";
+      pack#goto_page 2;
+      fichier_img <- "tmp/ocr_rota.pgm";     
       end
     else
       bouton "img/check.gif" "Image non chargée" "Erreur" (* NE PAS OUBLIER D'AJOUTER check.gif*)
-    end
-
-
-
-
-(*--------------------------*)
-(* ---- Apprentissage  ---- *)
-(*--------------------------*)
-
-  method load_img_app name =
-    if not (verif_file name "img") then
-      begin
-  bouton "img/jpg.gif" "Le fichier n'est pas une image" "Erreur lors du chargement"; (* NE PAS OUBLIER D'AJOUTER jpg.gif *)
-  img_app <- "aucun";
-  self#affichage 0 "Impossible de créer le profil d'apprentissage";
-      end
-    else
-      begin
-  img_app <- name;
-  file_dialog ~title:"Charger le texte d'apprentissage" ~callback:self#load_txt_app "*.txt" ()
-      end
-
-  method load_txt_app name =
-    if not (verif_file name "txt") then
-      begin
-  bouton "img/txt.gif" "Le fichier n'est pas un fichier texte" "Erreur lors du chargement"; (* NE PAS OUBLIER D'AJOUTER txt.gif *)
-  txt_app <- "aucun";
-  self#affichage 0 "Impossible de créer le profil d'apprentissage";
-      end
-    else
-      begin
-  txt_app <- name;
-  self#select_name_profil ();
-  ();
-      end
-
-  method select_name_profil () = choix_nom "Choix du nom du profil d'apprentissage" (* peut être remettre à la suite ? *)
-                                "Choisissez le nom du profil d'apprentissage" "tapez le nom" ~callback:self#apprentissage;
-
-  method apprentissage () =
-    begin
-      if txt_app <> "aucun" && img_app <> "aucun" then
-  begin
-    fichier_img <- img_app;
-    self#extraction ();
-    (* On fait notre apprentissage *)
-(* CAY PAS FAIT LE RESEAAAAU ET APPRENTISSAGE
-    reseau#init;
-    Learn.learn_page txt_app matrice reseau;
-    reseau#save (opt_doc#return_profil ());
-*)
-    profil_app <- "profile/"^(opt_doc#return_profil ())^".txt";
-    self#affichage 100 "Profil d'apprentissage créé";
-  end
-    end
-
-  method apprentissage_interface () = file_dialog ~title:"Charger l'image d'apprentissage" ~callback:self#load_img_app "*.jpg" ();
-
-  method load_profil name =
-    if not (verif_file name "txt") then
-      bouton "img/txt.gif" "Le fichier n'est pas un fichier de profil" "Erreur lors du chargement"
-    else
-  profil_app <- name;
-
-  method profil_app () = file_dialog ~title:"Charger un profil d'apprentissage" ~callback:self#load_profil "*.txt" ();
-
-
-
-
-(*---------------------------------------------*)
-(* ------ Reconnaissance des caractères ------ *)
-(*---------------------------------------------*)
-
-  method exportation () =
-    begin
-      if export = 1 then 
-        pack#remove_page 3;
-      export <- 1;
-      let label = GMisc.label ~text:"Votre texte :p" () in
-      let scrolled_window = GBin.scrolled_window
-  ~hpolicy:`AUTOMATIC ~vpolicy:`AUTOMATIC () ~packing:pack#add in
-      let s = f_to_string "tmp/exportation.html" in
-  buffer#set_text s;
-  let txt = GText.view ~buffer:buffer ~cursor_visible:true ~editable:true ~packing:scrolled_window#add_with_viewport () in
-    GtkSpell.attach ~lang:"fr iso8859-1" txt;
-  pack#goto_page 3;
-  bouton "img/check.gif" "Les images découpées se trouvent dans le dossier \"extract\"" "Information";
-    end
-
-  method reconnaissance () =
-    begin
-      if extract = 0 || trait = 0 then
-  begin
-    if fichier_img <> "aucun" then
-      begin
-        if extract = 0 then self#extraction ();
-        if trait = 0 then self#traiting ();
-        if profil_app = "aucun" then
-    bouton "img/supprimer.gif" "Aucun profil d'apprentissage n'est chargé" "Erreur de reconnaissance" (* NE PAS OUBLIER supprimer.gif*)
-        else
-    begin
-      (* On fait notre reconnaissance avec le profil *)
-  (* ENCORE MANQUE DE RESEAU + MISE EN FORME POUR FICHIER HTML 
-      reseau#init;
-      reseau#load profil_app;
-      Miseenforme.exportation_html reseau matrice; 
-  *)
-      self#affichage 100 "Reconnaissance terminée";
-      self#exportation ();
-    end
-      end
-    else
-      bouton "img/check.gif" "Image non chargée" "Erreur lors du chargement";
-  end
-      else
-  begin
-    if profil_app = "aucun" then
-      bouton "img/supprimer.gif" "Aucun profil d'apprentissage n'est chargé" "Erreur de reconnaissance"
-    else
-      begin
-        (* On fait notre reconnaissance avec le profil *)
-    (* ENCORE MANQUE DE RESEAU + MISE EN FORME POUR FICHIER HTML
-        reseau#init;
-        reseau#load profil_app;
-        Miseenforme.exportation_html reseau matrice;
-    *)
-        self#affichage 100 "Reconnaissance terminée";
-        self#exportation ();
-      end
-  end
     end
 
 
@@ -624,22 +470,12 @@ method open_image () =
     begin
       if fichier_img <> "aucun" then
   begin
-    if export = 1 then pack#remove_page 3;
-    if extract = 1 then pack#remove_page 2;
-    export <- 0;
-    extract <- 0;
-    if trait = 1 then
-      begin
-        pack#remove_page 1;
-        Gc.full_major ();
-      end;
-  (* WHAT IZ TEH MATRICE ?
-    matrice <- Transfert.pretreatment fichier_img (opt_doc#return_filtre ());
-  *)
-    self#affichage 100 "Pré-traitement terminé";
+    Main.pretreatment fichier_img (opt_doc#return_profil ());
+    self#affichage 100 "Binarization terminé";
     trait <- 1;
-    self#onglet "Pré-traitement" "tmp/ocr_img.pgm";
+    self#onglet "Binarize" "tmp/ocr_img.pgm";
     pack#goto_page 1;
+    fichier_img <- "tmp/ocr_img.pgm";
   end
       else
   bouton "img/check.gif" "Image non chargée" "Erreur lors du chargement"
@@ -677,7 +513,6 @@ let factory = new GMenu.factory ~accel_path:"<INTERFACE>/" menubar (* BAR EN HAU
 let accel_group = factory#accel_group                               (* ON LES AJOUTE TOUS APRES. *)
 let file_menu = factory#add_submenu "Fichier"
 let pref_menu = factory#add_submenu "Préférences"
-let app_menu = factory#add_submenu "Apprentissage"
 let edit_menu = factory#add_submenu "Reconnaissance"
 let help_menu = factory#add_submenu "Aide"
 let vbox_av = GPack.vbox ~packing:vbox#add ()
@@ -694,18 +529,13 @@ let _ =
     factory#add_separator ();
     factory#add_item "Quitter" ~key:_Q ~callback:window#destroy;
     window#add_accel_group accel_group;
-    let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" app_menu ~accel_group
-    in
-      factory#add_item "Charger un profil" ~callback:interface#profil_app;
-      factory#add_item "Apprendre à reconnaitre les formes" ~key:_F ~callback:interface#apprentissage_interface;
       let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" edit_menu ~accel_group
       in
-  factory#add_item "Pré-traitement" ~key:_P ~callback:interface#traiting;
-  factory#add_item "Extraction des caractères" ~key:_E ~callback:interface#extraction;
-  factory#add_item "Reconnaissance des caractères" ~key:_R ~callback:interface#reconnaissance;
+  factory#add_item "Binarize" ~key:_P ~callback:interface#traiting;
+  factory#add_item "Rotation" ~key:_E ~callback:interface#rotation;
+  factory#add_item "Cut" ~key:_R ~callback:interface#xycut;
   let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" pref_menu ~accel_group
   in
-    factory#add_item "Type de document" ~key:_T ~callback:interface#doc;
     factory#add_item "Options" ~key:_I ~callback:interface#options;
     let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" help_menu ~accel_group
     in
@@ -722,92 +552,3 @@ let _ =
       let () = GtkData.AccelMap.load "test.accel" in
         GMain.main ()
 
-
-
-
-
-
-
-
-
-(* 
-let print msg () =
-  print_endline msg;
-  flush stdout
-
-let print_toggle selected =
-  if selected
-  then print_endline "On"
-  else print_endline "Off";
-  flush stdout
-
-let print_selected n selected =
-  if selected then (
-    print_endline (string_of_int n);
-    flush stdout
-  )
-
-let nouv = 
-  print "Nouveau";
-  Printexc.print main
-
-let file_entries = [
-  `I ("New", nouv );
-  `I ("Open", print "Open");
-  `I ("Save", print "Save");
-  `I ("Save As", print "Save As");
-  `S;
-  `I ("Quit", GMain.Main.quit)
-]
-
-let option_entries = [
-  `C ("Check", false, print_toggle);
-  `S;
-  `R [("Rad1", true, print_selected 1);
-      ("Rad2", false, print_selected 2);
-      ("Rad3", false, print_selected 3)]
-]
-
-let help_entries = [
-  `I ("About", print "About");
-]
-
-let entries = [
-  `M ("File", file_entries);
-  `M ("Options", option_entries);
-  `M ("Help", help_entries)
-]
-
-let create_menu label menubar =
-  let item = GMenu.menu_item ~label ~packing:menubar#append () in
-  GMenu.menu ~packing:item#set_submenu ()
-
-let main () =
-  (* Make a window *)
-  let window = GWindow.window ~title:"Menu Entry" ~border_width:10 () in
-  window#connect#destroy ~callback:GMain.Main.quit;
-  
-  let main_vbox = GPack.vbox ~packing:window#add () in
-
-  let menubar = GMenu.menu_bar ~packing:main_vbox#add () in
-
-  let menu = create_menu "File" menubar in
-  GToolbox.build_menu menu ~entries:file_entries;
-
-  let menu = create_menu "Options" menubar in
-  GToolbox.build_menu menu ~entries:option_entries;
-
-  let menu = create_menu "Help" menubar in
-  GToolbox.build_menu menu ~entries:help_entries;
-
-  (* Popup menu *)
-  let button = GButton.button ~label:"Popup" ~packing:main_vbox#add () in
-  button#connect#clicked ~callback:(fun () ->
-    GToolbox.popup_menu ~entries ~button:0
-	  ~time:(GtkMain.Main.get_current_event_time ())
-    );
-
-  window#show ();
-  GMain.Main.main ()
-
-let _ = Printexc.print main () *)
