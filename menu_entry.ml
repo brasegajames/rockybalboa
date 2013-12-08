@@ -1,16 +1,13 @@
-(*
-* http://blog.developpez.com/ocamlblog/p8477/informatique/title_157
-*
-* http://sophie.aero.jussieu.fr/distrib/Fedora/13/i386/by-pkgid/01d985b39531834b302585eb3505cdb5/files/110
-*
-*
-*)
+(* ---------------------------- *)
+(* ---- INTERFACE GRAPHIQUE --- *)
+(* ----- OCR Rocky Balboa ----- *)
+(* ---------------------------- *)
 
-
-(* file: menu_entry.ml *)
 open GdkKeysyms 
 
 let _ = GtkMain.Main.init ()
+
+let window = GWindow.window ~width:800 ~height:600 ~title:"OCR - RockyBalboa" ()
 
 (* Pour ouvrir un nouveau fichier *)
 let file_dialog ~title ~callback ?filename filter () =
@@ -43,7 +40,6 @@ let ic = open_in name in
     exn -> close_in ic; 
     raise exn
 
-    (*  PLEIN DE PETITES FONCTIONS A LA CON POUR PLUS TARD *)
     (* Convertit une chaine en liste de caractere *)
 
 let explode s =
@@ -214,8 +210,6 @@ let option () =
        with _ -> ()
      end;
      close_in ic; ib#get
-
-
 
 
 (*----------------------------*)
@@ -430,9 +424,9 @@ done;
   begin
     Main.xycut fichier_img;
     self#affichage 100 "Découpage terminé";
-    trait <- 3;
+    trait <- trait +1;
     self#onglet "Cut" "tmp/ocr_cut.pgm";
-    pack#goto_page 3;
+    pack#goto_page trait;
     fichier_img <- "tmp/ocr_cut.pgm";
   end
       else
@@ -448,11 +442,11 @@ done;
     begin
     if fichier_img <> "aucun" then
       begin
-    Main.rotation fichier_img;
+      Main.rotation fichier_img;
       self#affichage 100 "Rotation terminé";
-      trait <- 2;
+      trait <- trait+1;
       self#onglet "Rotation" "tmp/ocr_rota.pgm";
-      pack#goto_page 2;
+      pack#goto_page trait;
       fichier_img <- "tmp/ocr_rota.pgm";     
       end
     else
@@ -472,9 +466,9 @@ done;
   begin
     Main.pretreatment fichier_img (opt_doc#return_profil ());
     self#affichage 100 "Binarization terminé";
-    trait <- 1;
+    trait <- trait+1;
     self#onglet "Binarize" "tmp/ocr_img.pgm";
-    pack#goto_page 1;
+    pack#goto_page trait;
     fichier_img <- "tmp/ocr_img.pgm";
   end
       else
@@ -506,7 +500,20 @@ done;
       _ -> prerr_endline "Save failed"
 end
 
-let window = GWindow.window ~width:800 ~height:600 ~title:"OCR - RockyBalboa" ()
+let confirm () =
+  let dialog = GWindow.message_dialog
+              ~message:"<b><big>Do you really want to quit?</big></b>\n"
+              ~parent:window
+              ~destroy_with_parent:true
+              ~use_markup:true
+              ~message_type:`QUESTION
+              ~position:`CENTER_ON_PARENT
+              ~buttons:GWindow.Buttons.yes_no ()
+        in
+  let temp = dialog#run () = `NO in
+          dialog#destroy ();
+          temp
+
 let vbox = GPack.vbox ~packing:window#add ()
 let menubar = GMenu.menu_bar ~packing:vbox#pack ()
 let factory = new GMenu.factory ~accel_path:"<INTERFACE>/" menubar (* BAR EN HAUT AVEC TOUS LES MENUS, *)
@@ -517,6 +524,10 @@ let edit_menu = factory#add_submenu "Reconnaissance"
 let help_menu = factory#add_submenu "Aide"
 let vbox_av = GPack.vbox ~packing:vbox#add ()
 let interface = new interface vbox vbox_av ()
+let quit () =
+        if not (confirm ()) then
+                GMain.quit ()
+
 
 let _ =
   interface#init ();
@@ -527,7 +538,7 @@ let _ =
     factory#add_item "Sauvegarder" ~key:_S ~callback:interface#save_file;
     factory#add_item "Sauvegarder sous ..." ~callback:interface#save_dialog;
     factory#add_separator ();
-    factory#add_item "Quitter" ~key:_Q ~callback:window#destroy;
+    factory#add_item "Quitter" ~key:_Q ~callback:quit;
     window#add_accel_group accel_group;
       let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" edit_menu ~accel_group
       in
