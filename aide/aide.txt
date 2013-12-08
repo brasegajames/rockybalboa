@@ -1,2 +1,19 @@
-Il faut cliquer sur les boutons hein,
-mais ça marche pas.
+Pour utiliser notre OCR, suivre ces étapes :
+- Charger une image sur laquelle travailler (Fichier/...)
+- Choisir le filtre à utiliser pour la binarization (Préférences/...)
+- Appliquer binarization, rotation, découpage des caractères, editeur (Reconnaissance/...)
+- Sauvegarder le texte entré (Fichier/...)
+- Quitter le programme (Fichier/...)
+
+
+Raccourcis (CTRL + ... ) :
+O = Charger une image
+S = Sauvegarder
+Q = Quitter le programme
+E = Binarize
+R = Rotate
+T = Cut
+Y = Editeur
+I = Filtre
+H = aide (ici)
+A = A propos

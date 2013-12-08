@@ -14,14 +14,13 @@ let file_dialog ~title ~callback ?filename filter () =
   let sel =
     GWindow.file_selection ~title ~modal:true ?filename () in
     sel#complete filter ;
-    sel#cancel_button#connect#clicked ~callback:sel#destroy;
-    sel#ok_button#connect#clicked ~callback:
+    ignore(sel#cancel_button#connect#clicked ~callback:sel#destroy);
+    ignore(sel#ok_button#connect#clicked ~callback:
       begin (fun () -> let name = sel#filename in
       sel#destroy ();
       callback name)
-    end;
+    end);
   sel#show ()
-
 
 let identity x = x
 
@@ -46,37 +45,6 @@ let explode s =
   let rec exp i l =
     if i < 0 then l else exp (i - 1) (s.[i] :: l) in
     exp (String.length s - 1) []
-
-
-(*  get a numerical value in a string *)
-
-let get_val s nb =
-  try
-    let i = ref 0 and k = ref 0 and j = ref 0 and len = ref 0 in
-      begin
-  while !j != nb do
-    if s.[!i] = ' ' then
-      j := !j + 1;
-    i := !i + 1;
-  done;
-  k := !i;
-  while !i < String.length s && s.[!i] != ' ' do
-    flush stdout;
-    i := !i + 1;
-    len := !len + 1;
-  done;
-  int_of_string (String.sub s !k !len);
-      end
-  with
-    | _ -> Printf.printf "Echec get_val de %i dans [%s]\n" nb s;
-  flush stdout;
-  42;;
-
-(* *)
-
-let approx value ecart moy =
-  value <= (ecart + moy) && value >= (moy - ecart);;
-
 
 (* Verifie Que Le Fichier est de l'extension qu'on a demandé *)
 
@@ -106,30 +74,19 @@ let verif_file s ext =
   in
     verif list
 
+(* Pour sauvegarder le texte *)
 
-(* print a reduction *)
-
-let print_char entree =
-  begin
-    for y = 0 to 15 do
-      begin
-  for x = 0 to 15 do
-          Printf.printf "%i" entree.(x).(y);
-  done;
-  Printf.printf "\n";
-      end;
-    done;
-    Printf.printf "\n\n";
-    flush stdout;
-  end;;
-
+let save (text : GText.view) file =
+      let och = open_out file in
+      output_string och (text#buffer#get_text ());
+      close_out och
 
 
 (* Class option et doc*)
 
   class options_document = object
-val mutable num_filtre = 2 (* Numéro du filtre *)
-val mutable nom_profil = "aucun" (* Nom du filtre sélectionné *)
+val mutable num_filtre = 2 
+val mutable nom_profil = "aucun" 
 
 method filtre name () = num_filtre <- name;
 match name with
@@ -153,8 +110,6 @@ let make_menu_item ~label ~packing ~callback =
      ignore (item#connect#activate ~callback)
 
 
-
-
 (* Menu option *)
 
 let option () = 
@@ -176,8 +131,6 @@ let option () =
  let button = GButton.button ~label:"Quitter" ~packing:box1#add () in
     button#connect#clicked ~callback:(fun () -> window1#destroy ());
     window1#show ()
-
-
 
 
 (*-----------------------------------------------------------------------*)
@@ -225,12 +178,10 @@ let option () =
        let textaide = GBin.scrolled_window ~border_width:2 ~hpolicy:`AUTOMATIC ~vpolicy:`AUTOMATIC 
                       ~width:580 ~height:500 ~packing:(box1#add) () in
        let b = GText.buffer () in
-       let s = f_to_string "aide/aide.txt" in (* NE PAS OUBLIER D'AJOUTER UN FICHIER aide.txt *)
+       let s = f_to_string "aide/aide.txt" in 
         b#set_text s;
         GText.view ~buffer:b ~cursor_visible:false ~editable:false ~packing:textaide#add_with_viewport ();
         window2#show ()
-
-
 
 
 (*------------------------*)
@@ -251,8 +202,6 @@ let option () =
          GText.view ~buffer:b ~cursor_visible:false ~editable:false ~packing:textapropos#add_with_viewport ();
 
        window3#show ()
-
-
 
 
 (*-------------------*)
@@ -276,8 +225,6 @@ let bouton image str titre =
       window5#show ()
 
 
-
-
 (*-------------------------------------*)
 (* --- Fenêtre de sélection de nom --- *)
 (*-------------------------------------*)
@@ -297,10 +244,10 @@ let choix_nom titre txt entry ~callback =
       window6#show ()
 
 
-
 (*-------------------------------*)
 (* --- Initialisation de SDL --- *)
 (*-------------------------------*)
+
 let sdl_init () =
   begin
     Sdl.init [`EVERYTHING];
@@ -314,6 +261,7 @@ let sdl_init () =
 (* ------ Classe : interface OCaml + GTK ------ *)
 (*----------------------------------------------*)
 (*----------------------------------------------*)
+
 class interface vbox av ?packing ?show () = 
   object (self)
   val text = GText.view ?packing ?show ()
@@ -333,7 +281,7 @@ class interface vbox av ?packing ?show () =
 
   method init () =
     begin
-  GMisc.image ~file:"img/logo.png" (* NE PAS OUBLIER LOGO DE BIENVENUE logo.png *) ~packing:pack#add ();
+  GMisc.image ~file:"img/logo.png" ~packing:pack#add ();
   pbar#set_text "Bienvenue !";
     end
 
@@ -414,6 +362,30 @@ done;
       ();
     end
 
+
+(* --------------------- *)
+(* --- Editeur texte --- *)
+(* --------------------- *)
+  method edt () =
+    begin
+      if fichier_img <> "aucun" then
+      begin
+      let scroll = GBin.scrolled_window
+          ~hpolicy:`AUTOMATIC ~vpolicy:`AUTOMATIC ~packing:pack#add () in
+      let b = GText.buffer () in
+      let basetext = "Corrigez la reconnaissance des caractères ici !" in
+      b#set_text(basetext);
+      let txt = GText.view ~buffer:b ~packing:scroll#add () in
+      txt#misc#modify_font_by_name "Monospace 10";
+      self#affichage 100 "Editeur de texte";
+      trait <- trait +1;
+      pack#goto_page trait;
+  end
+      else
+  bouton "img/check.gif" "Image non chargée" "Erreur lors du chargement"
+    end
+
+
 (* ---------------------------- *)
 (* ------ Xy_cut l'image ------ *)
 (* ---------------------------- *)
@@ -454,8 +426,6 @@ done;
     end
 
 
-
-
 (*------------------------------------*)
 (* ---- Methode de prétraitement ---- *)
 (*------------------------------------*)
@@ -474,8 +444,6 @@ done;
       else
   bouton "img/check.gif" "Image non chargée" "Erreur lors du chargement"
     end
-
-
 
 
   (*------------------------------------------*)
@@ -500,9 +468,11 @@ done;
       _ -> prerr_endline "Save failed"
 end
 
+
+
 let confirm () =
   let dialog = GWindow.message_dialog
-              ~message:"<b><big>Do you really want to quit?</big></b>\n"
+              ~message:"<b><big>Vous souhaitez quitter le programme ?</big></b>\n"
               ~parent:window
               ~destroy_with_parent:true
               ~use_markup:true
@@ -516,8 +486,8 @@ let confirm () =
 
 let vbox = GPack.vbox ~packing:window#add ()
 let menubar = GMenu.menu_bar ~packing:vbox#pack ()
-let factory = new GMenu.factory ~accel_path:"<INTERFACE>/" menubar (* BAR EN HAUT AVEC TOUS LES MENUS, *)
-let accel_group = factory#accel_group                               (* ON LES AJOUTE TOUS APRES. *)
+let factory = new GMenu.factory ~accel_path:"<INTERFACE>/" menubar
+let accel_group = factory#accel_group                               
 let file_menu = factory#add_submenu "Fichier"
 let pref_menu = factory#add_submenu "Préférences"
 let edit_menu = factory#add_submenu "Reconnaissance"
@@ -542,9 +512,10 @@ let _ =
     window#add_accel_group accel_group;
       let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" edit_menu ~accel_group
       in
-  factory#add_item "Binarize" ~key:_P ~callback:interface#traiting;
-  factory#add_item "Rotation" ~key:_E ~callback:interface#rotation;
-  factory#add_item "Cut" ~key:_R ~callback:interface#xycut;
+  factory#add_item "Binarize" ~key:_E ~callback:interface#traiting;
+  factory#add_item "Rotation" ~key:_R ~callback:interface#rotation;
+  factory#add_item "Cut" ~key:_T ~callback:interface#xycut;
+  factory#add_item "Editeur" ~key:_Y ~callback: interface#edt;
   let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" pref_menu ~accel_group
   in
     factory#add_item "Options" ~key:_I ~callback:interface#options;
@@ -562,4 +533,3 @@ let _ =
       window#show ();
       let () = GtkData.AccelMap.load "test.accel" in
         GMain.main ()
-

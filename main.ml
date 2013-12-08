@@ -30,5 +30,5 @@ let rotation file =
 
 let xycut file = 
     let img = Sdlloader.load_image file in
-    Xy_cut.get_tree_blocks img 6;
+    ignore(Xy_cut.get_tree_blocks img 6);
         Sdlvideo.save_BMP img "tmp/ocr_cut.pgm"
