@@ -225,8 +225,8 @@ let creat_white_mat x y =
 let reduce oldMat =
   let (w,h) = (Array.length oldMat,Array.length oldMat.(0)) in
     let newMat = creat_white_mat(w/2)(h/2) in
-  for y = 0 to h/2 -1 do
-    for x = 0 to w/2 -1 do
+  for y = h/4 to h/2 -1 do
+    for x = h/4 to w/2 -1 do
             if(oldMat.(x).(y) =(0,0,0)) then
             begin
               newMat.(x).(y) <- oldMat.(x).(y)
