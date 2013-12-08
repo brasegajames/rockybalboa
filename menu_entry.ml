@@ -268,14 +268,7 @@ class interface vbox av ?packing ?show () =
   val buffer = GText.buffer ()
   val mutable filename = None
   val mutable fichier_img = "aucun"
-  val mutable img_app = "aucun"
-  val mutable txt_app = "aucun"
-  val mutable profil_app = "aucun"
   val mutable trait = 0
-  val mutable extract = 0
-  val mutable export = 0
-  val mutable matrice = Main.keepit "lena.jpg" (* JE SAIS PAAAAAS si ça maaaaarche*)
-(* val mutable reseau = new Neurones.neural_network; *)
   val pack = GPack.notebook ~tab_pos:`TOP ~width:800 ~height:550 ~packing:vbox#add ()
   val pbar = GRange.progress_bar ~packing:av#add ()
 
@@ -323,8 +316,6 @@ done;
   self#onglet "Image à utiliser" name;
   fichier_img <- name;
   trait <- 0;
-  extract <- 0;
-  export <- 0
       end
 
 
