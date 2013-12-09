@@ -6,7 +6,7 @@ let sdl_init () =
 
 let keepit file = Sdlloader.load_image file
 
-let pretreatment file filter =
+let pretreatment file filter nb =
     (* Chargement d'une image *)
     let img = Sdlloader.load_image file in
     (* On récupère les dimensions *)
@@ -17,7 +17,7 @@ let pretreatment file filter =
       Bruit.filter filter new_img img;
       Binarization.black_and_white img;
       Binarization.parasite img;
-      Sdlvideo.save_BMP img "tmp/ocr_img.pgm";
+      Sdlvideo.save_BMP img ("tmp/ocr_img"^(string_of_int nb)^".pgm");
       img
 
 let rotation file =

@@ -90,10 +90,13 @@ val mutable nom_profil = "aucun"
 
 method filtre name () = num_filtre <- name;
 match name with
-  |1 -> nom_profil <- "gaussian"
+  |1 -> nom_profil <-"gaussian"
   |2 -> nom_profil <-"medium"
   |3 -> nom_profil <-"bords"
   |4 -> nom_profil <-"eroder"
+  |5 -> nom_profil <-"contrast"
+  |6 -> nom_profil <-"flou"
+  |7 -> nom_profil <-"repoussage"
   |_ -> nom_profil <-"gaussian"
 
 method profil entry () = nom_profil <- entry;
@@ -118,17 +121,21 @@ let option () =
 
   let box1 = GPack.vbox ~packing:window1#add () in
   let frame = GBin.frame ~label:"Menu options" ~packing:box1#add () in
-    GMisc.label ~text:"Voici le menu des options du projet OCR - RockyBalboa" ~packing:frame#add ();
+    GMisc.label ~text:"Voici le menu des options du projet OCR - RockyBalboa" 
+    ~packing:frame#add ();
 
   let box2 = GPack.hbox ~border_width:30 ~packing:box1#add () in
-  let _ = GMisc.label ~text:"Type de filtre utilisé (filtre gaussien par défaut)" ~packing:box2#add () in
+  let _ = GMisc.label ~text:"Type de filtre utilisé (filtre gaussien par défaut)" 
+  ~packing:box2#add () in
   let opt = GMenu.option_menu ~packing:box2#add () in
   let menu = GMenu.menu ~packing:opt#set_menu () in
   let box3 = GPack.hbox ~border_width:30 ~packing:box1#add () in
   let _ = GMisc.separator `HORIZONTAL ~packing:box3#add () in
-  let filter (label, filtre) = make_menu_item ~label ~packing:menu#append ~callback:(opt_doc#filtre filtre) in
-    List.iter filter [("gaussien", 1); ("medium", 2); ("bords", 3); ("eroder", 4)];
- let button = GButton.button ~label:"Quitter" ~packing:box1#add () in
+  let filter (label, filtre) = make_menu_item ~label ~packing:menu#append 
+  ~callback:(opt_doc#filtre filtre) in
+    List.iter filter [("gaussien", 1); ("medium", 2); ("bords", 3); 
+    ("eroder", 4); ("contrast", 5); ("flou", 6); ("repoussage", 7)];
+let button = GButton.button ~label:"Quitter" ~packing:box1#add () in
     button#connect#clicked ~callback:(fun () -> window1#destroy ());
     window1#show ()
 
@@ -137,7 +144,7 @@ let option () =
 (* --- Ouverture d'un fichier et chargement du texte dans une chaine --- *)
 (*-----------------------------------------------------------------------*)
 
- class input_buffer n = object
+class input_buffer n = object
    val mutable s = String.create n
    val mutable pos = 0
    method clear = pos <- 0
@@ -155,7 +162,7 @@ let option () =
  end
 
 
- let f_to_string n =
+let f_to_string n =
    let ic = open_in_bin n in
    let ib = new input_buffer 1024 in
      begin try
@@ -169,18 +176,22 @@ let option () =
 (* ---------- Aide ---------- *)
 (*----------------------------*)
 
- let help () =
-   let window2 = GWindow.window ~title:"Aide du logiciel" ~border_width:20 ~width:580 ~height:600 () in
+let help () =
+   let window2 = GWindow.window ~title:"Aide du logiciel" 
+   ~border_width:20 ~width:580 ~height:600 () in
      window2#event#connect#delete ~callback:(fun _ -> window2#destroy ();true);
      let box1 = GPack.vbox ~packing:window2#add () in
      let frame = GBin.frame ~label:"Menu d'aide" ~packing:box1#add () in
-       GMisc.label ~text:"Voici le menu d'aide du projet OCR - RockyBalboa" ~packing:frame#add ();
-       let textaide = GBin.scrolled_window ~border_width:2 ~hpolicy:`AUTOMATIC ~vpolicy:`AUTOMATIC 
+       GMisc.label ~text:"Voici le menu d'aide du projet OCR - RockyBalboa" 
+       ~packing:frame#add ();
+       let textaide = GBin.scrolled_window ~border_width:2 ~hpolicy:`AUTOMATIC 
+       ~vpolicy:`AUTOMATIC 
                       ~width:580 ~height:500 ~packing:(box1#add) () in
        let b = GText.buffer () in
        let s = f_to_string "aide/aide.txt" in 
         b#set_text s;
-        GText.view ~buffer:b ~cursor_visible:false ~editable:false ~packing:textaide#add_with_viewport ();
+        GText.view ~buffer:b ~cursor_visible:false ~editable:false 
+        ~packing:textaide#add_with_viewport ();
         window2#show ()
 
 
@@ -188,18 +199,22 @@ let option () =
 (* ------ A propos ------ *)
 (*------------------------*)
 
- let apropos () =
-   let window3 = GWindow.window ~title:"A propos du logiciel" ~border_width:20 ~width:580 ~height:600 () in
+let apropos () =
+   let window3 = GWindow.window ~title:"A propos du logiciel" 
+   ~border_width:20 ~width:580 ~height:600 () in
      window3#event#connect#delete ~callback:(fun _ -> window3#destroy (); true);
      let box1 = GPack.vbox ~packing:window3#add () in
      let frame = GBin.frame ~label:"Menu d'a propos" ~packing:box1#add () in
-       GMisc.label ~text:"Voici le menu d'a propos du projet OCR - RockyBalboa" ~packing:frame#add ();
-       let textapropos = GBin.scrolled_window ~border_width:2 ~hpolicy:`AUTOMATIC ~vpolicy:`AUTOMATIC 
-                          ~width:580 ~height:500 ~packing:(box1#add) () in
+       GMisc.label ~text:"Voici le menu d'a propos du projet OCR - RockyBalboa"
+        ~packing:frame#add ();
+       let textapropos = GBin.scrolled_window ~border_width:2 
+       ~hpolicy:`AUTOMATIC ~vpolicy:`AUTOMATIC 
+        ~width:580 ~height:500 ~packing:(box1#add) () in
        let b = GText.buffer () in
-       let s = f_to_string "aide/apropos.txt" in (* NE PAS OUBLIER D'AJOUTER UN FICHIER apropos.txt *)
+       let s = f_to_string "aide/apropos.txt" in
          b#set_text s;
-         GText.view ~buffer:b ~cursor_visible:false ~editable:false ~packing:textapropos#add_with_viewport ();
+         GText.view ~buffer:b ~cursor_visible:false ~editable:false 
+         ~packing:textapropos#add_with_viewport ();
 
        window3#show ()
 
@@ -238,7 +253,7 @@ let choix_nom titre txt entry ~callback =
       entry#connect#activate ~callback:(opt_doc#profil entry#text);
 
       let button = GButton.button ~label:"Ok" ~packing:box1#add () in 
-      button#connect#clicked ~callback:(fun () -> (opt_doc#profil entry#text ();
+      button#connect#clicked ~callback:(fun ()-> (opt_doc#profil entry#text ();
                                                   callback ();
                                                   window6#destroy ()));
       window6#show ()
@@ -268,8 +283,12 @@ class interface vbox av ?packing ?show () =
   val buffer = GText.buffer ()
   val mutable filename = None
   val mutable fichier_img = "aucun"
-  val mutable trait = 0
-  val pack = GPack.notebook ~tab_pos:`TOP ~width:800 ~height:550 ~packing:vbox#add ()
+  val mutable bin = 0
+  val mutable rot = 0
+  val mutable cut = 0
+  val mutable edit = 0
+  val pack = GPack.notebook ~tab_pos:`TOP ~width:800 ~height:550 
+  ~packing:vbox#add ()
   val pbar = GRange.progress_bar ~packing:av#add ()
 
   method init () =
@@ -289,10 +308,9 @@ class interface vbox av ?packing ?show () =
   method onglet texte img =
    let scrolled_window = GBin.scrolled_window
      ~hpolicy:`AUTOMATIC ~vpolicy:`AUTOMATIC ~packing:pack#add () in
-   let _ = GMisc.image ~file:img ~packing:scrolled_window#add_with_viewport () in
+   let _ = GMisc.image ~file:img ~packing:scrolled_window#add_with_viewport () 
+ in
      ();
-
-
 
 
 (*----------------------------------*)
@@ -304,18 +322,22 @@ method open_image () =
 
   method load_image name =
     if not (verif_file name "img") then
-      bouton "img/jpg.gif" "Le fichier n'est pas une image" "Erreur lors du chargement"
+      bouton "img/jpg.gif" "Le fichier n'est pas une image" 
+      "Erreur lors du chargement"
     else
       begin
-  if trait = 1 then Gc.full_major ();
+  if bin = 1 then Gc.full_major ();
   self#affichage 100 "Image chargée";
-  while trait >= 0 do
+  while edit >= 0 do
   pack#remove_page pack#current_page;
-  trait <- trait - 1;
+  edit <- edit - 1;
 done;
+  bin <-0;
+  rot <- 0;
+  bin <- 0;
+  edit <- 0;
   self#onglet "Image à utiliser" name;
   fichier_img <- name;
-  trait <- 0;
       end
 
 
@@ -371,8 +393,8 @@ done;
       txt#misc#modify_font_by_name "Arial 10";
       txt#misc#modify_font_by_name "Monospace 10";
       self#affichage 100 "Editeur de texte";
-      trait <- trait +1;
-      pack#goto_page trait;
+      edit <- edit +1;
+      pack#goto_page edit;
   end
       else
   bouton "img/check.gif" "Image non chargée" "Erreur lors du chargement"
@@ -389,9 +411,10 @@ done;
   begin
     Main.xycut fichier_img;
     self#affichage 100 "Découpage terminé";
-    trait <- trait +1;
+    cut <- cut +1;
+    edit <- edit +1;
     self#onglet "Cut" "tmp/ocr_cut.pgm";
-    pack#goto_page trait;
+    pack#goto_page cut;
     fichier_img <- "tmp/ocr_cut.pgm";
   end
       else
@@ -409,13 +432,15 @@ done;
       begin
       Main.rotation fichier_img;
       self#affichage 100 "Rotation terminé";
-      trait <- trait+1;
+      rot <- rot+1;
+      cut <- cut +1;
+      edit <- edit +1;
       self#onglet "Rotation" "tmp/ocr_rota.pgm";
-      pack#goto_page trait;
+      pack#goto_page rot;
       fichier_img <- "tmp/ocr_rota.pgm";     
       end
     else
-      bouton "img/check.gif" "Image non chargée" "Erreur" (* NE PAS OUBLIER D'AJOUTER check.gif*)
+      bouton "img/check.gif" "Image non chargée" "Erreur"
     end
 
 
@@ -427,12 +452,15 @@ done;
     begin
       if fichier_img <> "aucun" then
   begin
-    Main.pretreatment fichier_img (opt_doc#return_profil ());
+    Main.pretreatment fichier_img (opt_doc#return_profil ()) (bin+1);
     self#affichage 100 "Binarization terminé";
-    trait <- trait+1;
-    self#onglet "Binarize" "tmp/ocr_img.pgm";
-    pack#goto_page trait;
-    fichier_img <- "tmp/ocr_img.pgm";
+    bin <- bin+1;
+    rot <- rot+1;
+    cut <- cut +1;
+    edit <- edit +1;
+    self#onglet "Binarize" ("tmp/ocr_img"^(string_of_int bin)^".pgm");
+    pack#goto_page bin;
+    fichier_img <- ("tmp/ocr_img"^(string_of_int bin)^".pgm");
   end
       else
   bouton "img/check.gif" "Image non chargée" "Erreur lors du chargement"
@@ -465,7 +493,7 @@ end
 
 let confirm () =
   let dialog = GWindow.message_dialog
-              ~message:"<b><big>Vous souhaitez quitter le programme ?</big></b>\n"
+          ~message:"<b><big>Vous souhaitez quitter le programme ?</big></b>\n"
               ~parent:window
               ~destroy_with_parent:true
               ~use_markup:true
@@ -495,24 +523,29 @@ let quit () =
 let _ =
   interface#init ();
   window#connect#destroy ~callback:GMain.quit;
-  let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" file_menu ~accel_group
+  let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" 
+  file_menu ~accel_group
   in
-    factory#add_item "Charger une image" ~key:_O ~callback:interface#open_image;
+    factory#add_item "Charger une image" ~key:_O 
+    ~callback:interface#open_image;
     factory#add_item "Sauvegarder" ~key:_S ~callback:interface#save_file;
     factory#add_item "Sauvegarder sous ..." ~callback:interface#save_dialog;
     factory#add_separator ();
     factory#add_item "Quitter" ~key:_Q ~callback:quit;
     window#add_accel_group accel_group;
-      let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" edit_menu ~accel_group
+      let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" 
+      edit_menu ~accel_group
       in
   factory#add_item "Binarize" ~key:_E ~callback:interface#traiting;
   factory#add_item "Rotation" ~key:_R ~callback:interface#rotation;
   factory#add_item "Cut" ~key:_T ~callback:interface#xycut;
   factory#add_item "Editeur" ~key:_Y ~callback: interface#edt;
-  let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" pref_menu ~accel_group
+  let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" 
+  pref_menu ~accel_group
   in
     factory#add_item "Options" ~key:_I ~callback:interface#options;
-    let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" help_menu ~accel_group
+    let factory = new GMenu.factory ~accel_path:"<INTERFACE File>/////" 
+    help_menu ~accel_group
     in
       factory#add_item "Aide" ~key:_H ~callback:interface#help;
       factory#add_item "A propos" ~key:_A ~callback:interface#apropos;
