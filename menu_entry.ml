@@ -367,6 +367,8 @@ done;
       let basetext = "Corrigez la reconnaissance des caractères ici !" in
       b#set_text(basetext);
       let txt = GText.view ~buffer:b ~packing:scroll#add () in
+      GtkSpell.attach ~lang:"fr_FR" txt;
+      txt#misc#modify_font_by_name "Arial 10";
       txt#misc#modify_font_by_name "Monospace 10";
       self#affichage 100 "Editeur de texte";
       trait <- trait +1;
