@@ -1,7 +1,7 @@
 Pour utiliser notre OCR, suivre ces étapes :
 - Charger une image sur laquelle travailler (Fichier/...)
 - Choisir le filtre à utiliser pour la binarization (Préférences/...)
-- Appliquer la binarization, puis une rotation, le déoupage des caractères via xycut et enfin ouvrir un éditeur de texte (Reconnaissance/...)
+- Appliquer binarization, rotation, découpage des caractères, editeur (Reconnaissance/...)
 - Sauvegarder le texte entré (Fichier/...)
 - Quitter le programme (Fichier/...)
 
